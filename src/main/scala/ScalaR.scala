@@ -1,12 +1,12 @@
 object ScalaR {
-	var variableMappings: Map[Symbol, Any] = _
+	var variableMappings: Map[Symbol, Type] = _
 
 	implicit class VariableWrapper(s: Symbol) {
-		def <-(value: Type) {
+		def <-(value: Type) = {
 			variableMappings += (s -> value)
 		}
 
-		def <-(variable: Symbol) {
+		def <-(variable: Symbol) = {
 			if (variableMappings.contains(variable)) {
 				variableMappings += (s -> variableMappings(variable))
 			} else {
@@ -14,5 +14,31 @@ object ScalaR {
 				throw new RuntimeException(s"Error: object '$name' not found")
 			}
 		}
+
+		def ==(value: Type) = {
+			if (variableMappings.contains(s) && variableMappings(s).getType == value.getType) {
+				value.storedValue == variableMappings(s).storedValue
+			} else if (!variableMappings.contains(s)) {
+				val name = s.name
+				throw new RuntimeException(s"Error: object '$name' not found")
+			} else {
+				throw new RuntimeException("Error: input objects must have same type")
+			}
+		}
+
+		def ==(value: Symbol) = {
+			if (variableMappings.contains(s) && variableMappings.contains(value) && variableMappings(s).getType == variableMappings(value).getType) {
+				variableMappings(value).storedValue == variableMappings(s).storedValue
+			} else if (!variableMappings.contains(s)) {
+				val name = s.name
+				throw new RuntimeException(s"Error: object '$name' not found")
+			} else if (!variableMappings.contains(value)) {
+				val name = value.name
+				throw new RuntimeException(s"Error: object '$name' not found")
+			} else {
+				throw new RuntimeException("Error: input objects must have same type")
+			}
+		}
+
 	}
 }
