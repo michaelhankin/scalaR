@@ -1,3 +1,5 @@
+package ut.cs.cs345.scalar
+
 abstract class Type(value: Any) {
 	var storedValue: Any
 	def getType(): String
