@@ -1,7 +1,7 @@
 package ut.cs.cs345.scalar
 
 object ScalaR {
-	var variableMappings: Map[Symbol, Type] = _
+	var variableMappings: Map[Symbol, Type] = Map[Symbol, Type]()
 
 	implicit class VariableWrapper(s: Symbol) {
 		def <--(value: Type) = {
@@ -41,6 +41,7 @@ object ScalaR {
 				throw new RuntimeException("Error: input objects must have same type")
 			}
 		}
-
 	}
+
+	def getVariableMappings = variableMappings
 }

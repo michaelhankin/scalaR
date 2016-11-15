@@ -1,26 +1,27 @@
 package ut.cs.cs345.scalar
 
-abstract class Type(value: Any) {
-	var storedValue: Any
-	def getType(): String
+abstract class Type {
+	type T >: Any
+	def getType: String
+	def storedValue: T
 } 
 
 class Logical(value: Boolean) extends Type {
-	var storedValue: Boolean = value
+	def storedValue: Boolean = value
 	def getType(): String = "Logical"
 }
 
 class Numeric(value: Double) extends Type {
-	var storedValue: Double = value
+	def storedValue: Double = value
 	def getType(): String = "Numeric"
 }
 
 class Integer(value: Int) extends Type {
-	var storedValue: Int = value
+	def storedValue: Int = value
 	def getType(): String = "Integer"
 }
 
 class Character(value: String) extends Type {
-	var storedValue: String = value
+	def storedValue: String = value
 	def getType(): String = "Character"
 }
