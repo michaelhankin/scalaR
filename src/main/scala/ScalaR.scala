@@ -4,8 +4,16 @@ object ScalaR {
 	var variableMappings: Map[Symbol, Type] = Map[Symbol, Type]()
 
 	implicit class VariableWrapper(s: Symbol) {
-		def <--(value: Type) = {
-			variableMappings += (s -> value)
+		// def <--(value: Type) = {
+		// 	variableMappings += (s -> value)
+		// }
+
+		def <--(value: Boolean) = {
+			variableMappings += (s -> Logical(value))
+		}
+
+		def <--(value: Boolean) = {
+			variableMappings += (s -> Logical(value))
 		}
 
 		def <--(variable: Symbol) = {
