@@ -2,8 +2,9 @@ package ut.cs.cs345.scalar
 
 import scala.collection.mutable.ArrayBuffer
 import scala.annotation.unchecked.uncheckedVariance
+import scala.reflect.ClassTag
 
-class RVector[+T](val data: ArrayBuffer[T @uncheckedVariance]) {
+class RVector[+T](val data: ArrayBuffer[T @uncheckedVariance])(implicit ev: ClassTag[T]) {
 	val vecType = data(0)
 
 	def apply(idx: Int): T = {
@@ -11,8 +12,9 @@ class RVector[+T](val data: ArrayBuffer[T @uncheckedVariance]) {
 	}
 
 	// def data: ArrayBuffer[Type] = value
-	def getType(): String = s"Vector[$vecType]"
+	def getType(): String = ev.toString()
 
+	def length: Int = data.length
 }
 
 // object c {
