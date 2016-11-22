@@ -1,4 +1,4 @@
-package ut.cs.cs345.scalar
+package scalar
 import scala.collection.mutable.ArrayBuffer
 
 class ScalaR {
@@ -39,7 +39,7 @@ class ScalaR {
 			variableMappings += (s -> vec)
 		}
 
-		def <--[T](f: Seq[T] => RVector[T]) = {
+		def <--(vector: RVector[Type]) = {
 
 		}
 
@@ -85,7 +85,7 @@ class ScalaR {
 		// }
 	}
 
-	def c[T](values: Any*): RVector[Integer] = {
+	def c(values: Any*): RVector[Type] = {
 		return new RVector[Integer](new ArrayBuffer[Integer]())
 	}
 

@@ -2,7 +2,8 @@
   * Created by scott on 11/14/16.
   */
 
-package ut.cs.cs345.scalar
+package scalar
+import scala.reflect._
 import org.scalatest.FlatSpec
 
 class Tests extends FlatSpec {
@@ -23,7 +24,7 @@ class Tests extends FlatSpec {
       def run(): Unit = {
         's <-- 1
         assert('s(1) == 1)
-        assert('s.getType() == "Integer")
+        assert('s.getType() == classTag[Integer].toString())
       }
     }
 
@@ -35,7 +36,7 @@ class Tests extends FlatSpec {
       def run(): Unit = {
         's <-- 1.0
         assert('s(1) == 1.0)
-        assert('s.getType() == "Numeric")
+        assert('s.getType() == classTag[Numeric].toString())
       }
     }
 
@@ -47,7 +48,7 @@ class Tests extends FlatSpec {
       def run(): Unit = {
         's <-- true
         assert('s(1) == true)
-        assert('s.getType() == "Logical")
+        assert('s.getType() == val tag = classTag[Logical].toString())
       }
     }
 
@@ -59,6 +60,7 @@ class Tests extends FlatSpec {
       def run(): Unit = {
         's <-- "Hello"
         assert('s(1) == "Hello")
+        assert('s.getType() == val tag = classTag[Character].toString())
       }
     }
 

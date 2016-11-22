@@ -1,4 +1,4 @@
-package ut.cs.cs345.scalar
+package scalar
 
 abstract class Type {
 	type T >: Any

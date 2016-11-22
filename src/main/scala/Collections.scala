@@ -1,4 +1,4 @@
-package ut.cs.cs345.scalar
+package scalar
 
 import scala.collection.mutable.ArrayBuffer
 import scala.annotation.unchecked.uncheckedVariance

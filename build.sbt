@@ -1,6 +1,6 @@
 name := "ScalaR"
 
-organization := "ut.cs.cs345"
+organization := ""
 
 version := "0.0.1"
 
@@ -24,5 +24,5 @@ libraryDependencies ++= Seq(
   // "org.scalanlp" %% "breeze-viz" % "0.12"
 )
 
-initialCommands := "import ut.cs.cs345.scalar._"
+initialCommands := "import scalar._"
 
