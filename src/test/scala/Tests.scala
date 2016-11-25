@@ -4,6 +4,7 @@
 
 package scalar
 import scala.reflect._
+import VectorUtils._
 import org.scalatest.FlatSpec
 
 class Tests extends FlatSpec {
@@ -64,8 +65,8 @@ class Tests extends FlatSpec {
     SimpAssignCharacter.run()
   }
 
-  "c function test: Integer" should "Create Integer vector from c()" in {
-    object CfuncInteger extends ScalaR {
+  "c function test: Numeric" should "Create Numeric vector from c()" in {
+    object CNumeric extends ScalaR {
       def run(): Unit = {
         'vec <-- c(1,2,3)
         assert(length('vec) == 3)
@@ -74,7 +75,94 @@ class Tests extends FlatSpec {
       }
     }
 
-    CfuncInteger.run()
+    CNumeric.run()
+  }
+
+  "c function test: Logical" should "Create Logical vector from c()" in {
+    object CLogical extends ScalaR {
+      def run(): Unit = {
+        'vec <-- c(true,true,false)
+        assert(length('vec) == 3)
+        assert('vec(1) == true && 'vec(2) == true && 'vec(3) == false)
+        assert(typeOf('vec) == "Logical")
+      }
+    }
+
+    CLogical.run()
+  }
+
+  "c function test: Character" should "Create Character vector from c()" in {
+    object CCharacter extends ScalaR {
+      def run(): Unit = {
+        'vec <-- c("hello", "world", "vector")
+        assert(length('vec) == 3)
+        assert('vec(1) == "hello" && 'vec(2) == "world" && 'vec(3) == "vector")
+        assert(typeOf('vec) == "Character")
+      }
+    }
+
+    CCharacter.run()
+  }
+
+  "c function test: mixed type 1" should "Create Numeric with Logical from c()" in {
+    object CMix1 extends ScalaR {
+      def run(): Unit = {
+        'vec <-- c(true, 1, 1.23)
+        assert(length('vec) == 3)
+        assert('vec(1) == 1.0 && 'vec(2) == 1.0 && 'vec(3) == 1.23)
+        assert(typeOf('vec) == "Numeric")
+      }
+    }
+
+    CMix1.run()
+  }
+
+  "c function test: mixed type 2" should "Create Character with Numeric and Logical from c()" in {
+    object CMix2 extends ScalaR {
+      def run(): Unit = {
+        'vec <-- c(true, 1.0, "string")
+        assert(length('vec) == 3)
+        assert('vec(1) == "true" && 'vec(2) == "1.0" && 'vec(3) == "string")
+        assert(typeOf('vec) == "Character")
+      }
+    }
+
+    CMix2.run()
+  }
+
+  // just add RVector constructor that takes an RVector
+  // and 'unroll' it. eg c(c(1,2,3),c(4,5,6)) == RVector(1,2,3,4,5,6)
+  "c function test: nested" should "unroll" in {
+    object CMix2 extends ScalaR {
+      def run(): Unit = {
+        'vec <-- c(c(1,2,3), c(4,5,6), c(7,8,9))
+      }
+    }
+
+    CMix2.run()
+  }
+
+  // slicing equality is weird, probably not that important however 
+  "slicing test" should "return proper slice" in {
+    object SliceTest extends ScalaR {
+      def run(): Unit = {
+        'vec <-- c(1,2,3,4,5)
+        val x = 'vec(1 to 3).data
+
+        val stream = new java.io.ByteArrayOutputStream()
+        Console.withErr(stream) {
+        println(s"${x}")
+        println(s"${c(1.0, 2.0, 3.0).data}")
+        }
+
+        'vec <-- c(1,2,3,4,5)
+        assert(length('vec) == 5)
+        assert(length('vec(1 to 3)) == 3)
+        assert('vec(1 to 3) == c(1.0, 2.0, 3.0))
+      }
+    }
+
+    SliceTest.run()
   }
 
   //   Test2.run()

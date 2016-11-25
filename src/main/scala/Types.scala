@@ -17,6 +17,10 @@ class Numeric(value: Double) extends Type {
 	type T = Double
 	def storedValue: Double = value
 	def getType: String = "Numeric"
+
+	def ==(that: Numeric): Boolean = {
+		return this.storedValue == that.storedValue
+	}
 }
 
 class Character(value: String) extends Type {

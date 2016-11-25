@@ -2,6 +2,10 @@ package scalar
 import scala.collection.mutable.ArrayBuffer
 import TypeUtils._
 
+// TODO: Make implicit Int / Double / Boolean / String to RVector 
+// eg 'v = 1
+//    'v == 1 etc 
+
 class ScalaR {
 	def NA = new NAType
 	var variableMappings: Map[Symbol, RVector] = Map[Symbol, RVector]()
@@ -11,6 +15,11 @@ class ScalaR {
 		def apply(idx: Int): Any = {
 			val vec = variableMappings(s)
 			return vec(idx-1).storedValue
+		}
+
+		def apply(r: Range): RVector = {
+			val vec = variableMappings(s)
+			return vec(r.min-1, r.max)
 		}
 
 		def <--(value: Any) = {
@@ -52,19 +61,11 @@ class ScalaR {
 		// 	}
 		// }
 
-		// def ==(value: Symbol) = {
-		// 	if (variableMappings.contains(s) && variableMappings.contains(value) && variableMappings(s).getType == variableMappings(value).getType) {
-		// 		variableMappings(value).storedValue == variableMappings(s).storedValue
-		// 	} else if (!variableMappings.contains(s)) {
-		// 		val name = s.name
-		// 		throw new RuntimeException(s"Error: object '$name' not found")
-		// 	} else if (!variableMappings.contains(value)) {
-		// 		val name = value.name
-		// 		throw new RuntimeException(s"Error: object '$name' not found")
-		// 	} else {
-		// 		throw new RuntimeException("Error: input objects must have same type")
-		// 	}
-		// }
+		def ==(other: Symbol): Boolean = {
+			val a = variableMappings(s)
+			val b = variableMappings(other)
+			return a.getType == b.getType && a.data == b.data
+		}
 	}
 
 	def c(values: Any*): RVector = {
@@ -77,12 +78,12 @@ class ScalaR {
 				case b: Boolean => "Logical"
 				case i: Int     => "Numeric"
 				case d: Double  => "Numeric"
-				case s: String  => "String"
+				case s: String  => "Character"
 				case _          => "Unsupported Type"
 			}
 
 			if (curType == "Unsupported Type") 
-				throw new IllegalArgumentException(s"Unsupported type: ${v.toString}")
+				throw new IllegalArgumentException(s"${v.toString} has unsupported type")
 			
 			val curIdx = typeHierarchy.indexOf(curType)
 			if (curIdx > typeHierarchy.indexOf(highestType)) {
@@ -98,7 +99,10 @@ class ScalaR {
 		}
 	}
 
+	// basic R usage functions 
 	def length(s: Symbol): Int = variableMappings(s).length
+	def length(vec: RVector): Int = vec.length
+
 	def typeOf(s: Symbol): String = variableMappings(s).getType
 
 	// def asLogical(vec: RVector): RVector = {
