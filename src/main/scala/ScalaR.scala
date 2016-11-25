@@ -4,7 +4,7 @@ import TypeUtils._
 
 class ScalaR {
 	def NA = new NAType
-	var variableMappings: Map[Symbol, RVector[Type]] = Map[Symbol, RVector[Type]]()
+	var variableMappings: Map[Symbol, RVector] = Map[Symbol, RVector]()
 
 	implicit class VariableWrapper(s: Symbol) {
 
@@ -13,36 +13,23 @@ class ScalaR {
 			return vec(idx-1).storedValue
 		}
 
-		def <--(value: Boolean) = {
-			val buf = ArrayBuffer[Logical]()
-			buf += new Logical(value)
-			var vec = new RVector[Logical](buf)
-			variableMappings += (s -> vec)
-		}
-
-		def <--(value: Int) = {
-			val buf = ArrayBuffer[Integer]()
-			buf += new Integer(value)
-			var vec = new RVector[Integer](buf)
-			variableMappings += (s -> vec)
-		}
-
-		def <--(value: Double) = {
-			val buf = ArrayBuffer[Numeric]()
-			buf += new Numeric(value)
-			var vec = new RVector[Numeric](buf)
-			variableMappings += (s -> vec)
-		}
-
-		def <--(value: String) = {
-			val buf = ArrayBuffer[Character]()
-			buf += new Character(value)
-			var vec = new RVector[Character](buf)
-			variableMappings += (s -> vec)
-		}
-
-		def <--(vector: RVector[Type]) = {
-
+		def <--(value: Any) = {
+			val buf = ArrayBuffer[Type]()
+			value match {
+				case b: Boolean  => buf += new Logical(b)
+								    var vec = new RVector(buf, "Logical")
+								    variableMappings += (s -> vec)
+				case i: Int      => buf += new Numeric(i)
+								    var vec = new RVector(buf, "Numeric")
+								    variableMappings += (s -> vec)
+				case d: Double   => buf += new Numeric(d)
+								    var vec = new RVector(buf, "Numeric")
+								    variableMappings += (s -> vec)
+				case str: String => buf += new Character(str)
+								    var vec = new RVector(buf, "Character")
+								    variableMappings += (s -> vec)
+				case v: RVector  => variableMappings += (s -> v)	
+			}
 		}
 
 		def <--(variable: Symbol) = { 
@@ -53,13 +40,6 @@ class ScalaR {
 				throw new RuntimeException(s"Error: object '$name' not found")
 			}
 		}
-
-		def getType(): String = {
-			val vec = variableMappings(s)
-			return vec.getType()
-		}
-
-		def length: Int = variableMappings(s).length
 
 		// def ==(value: Type) = {
 		// 	if (variableMappings.contains(s) && variableMappings(s).getType == value.getType) {
@@ -87,13 +67,7 @@ class ScalaR {
 		// }
 	}
 
-	def c(values: Any*): Either[RVector[Logical], Either[RVector[Integer], 
-	Either[RVector[Numeric], RVector[Character]]]] = {
-		// Logical: Left(RVec[Logical])
-		// Integer: Right(Left(RVec[Integer]))
-		// Numeric: Right(Right(Left(RVec[Numeric])))
-		// Character: Right(Right(Right(RVec[Character])))
-
+	def c(values: Any*): RVector = {
 		val typeHierarchy = Array("Logical", "Integer", "Numeric", "Character")
 		var highestType: String = "Logical"
 
@@ -101,7 +75,7 @@ class ScalaR {
 			val curType = v match {
 				case n: NAType  => "NA"
 				case b: Boolean => "Logical"
-				case i: Int     => "Integer"
+				case i: Int     => "Numeric"
 				case d: Double  => "Numeric"
 				case s: String  => "String"
 				case _          => "Unsupported Type"
@@ -116,71 +90,29 @@ class ScalaR {
 			}
 		}
 
+		var buf = ArrayBuffer[Type]()
 		return highestType match {
-			case "Logical" => Left(new RVector[Logical](ArrayBuffer[Logical]() ++ values.map(asLogical)))
-			case "Integer" => Right(Left(new RVector[Integer](ArrayBuffer[Integer]() ++ values.map(asInteger))))
-			case "Numeric" => Right(Right(Left(new RVector[Numeric](ArrayBuffer[Numeric]() ++ values.map(asNumeric)))))
-			case "Charatcer" => Right(Right(Right(new RVector[Character](ArrayBuffer[Character]() ++ values.map(asCharacter)))))
+			case "Logical" => new RVector(buf ++ values.map(toLogical), "Logical")
+			case "Numeric" => new RVector(buf ++ values.map(toNumeric), "Numeric")
+			case "Character" => new RVector(buf ++ values.map(toCharacter), "Character")
 		}
-
-		// for (v <- values) {
-		// 	if (highestType == "Logical")
-		// 		buf += new Logical(asLogical(v))
-		// 	else if (highest == "Integer")
-		// 		buf += new Integer(asInteger(v))
-		// 	else if (highest == "Numeric")
-		// 		buf += new Numeric(asNumeric(v))
-		// 	else 
-		// 		buf += new Character(asCharacter(v))
-		// }
-
-		// var vec = 
-		// if (highestType == "Logical")
-		// 	new RVector[Logical](buf)
-		// else if (highest == "Integer")
-		// 	new RVector[Integer](buf)
-		// else if (highest == "Numeric")
-		// 	new RVector[Numeric](buf)
-		// else 
-		// 	new RVector[Character](buf)
-		// var vec = highestType match {
-		// 	case "Logical" => new RVector[Logical](buf)
-		// 	case "Integer" => new RVector[Integer](buf) 
-		// 	case "Numeric" => new ArrayBuffer[Numeric](buf)
-		// 	case "Charatcer" => new ArrayBuffer[Character](buf)
-		// } 
 	}
 
-	// object c {
-	// 	val typeHierarchy = Array("Logical", "Integer", "Numeric", "Character")
+	def length(s: Symbol): Int = variableMappings(s).length
+	def typeOf(s: Symbol): String = variableMappings(s).getType
 
-	// 	def apply(values: Any*): Vector = {
-	// 		var highestType: String = "Logical" 
-	// 		for (value <- values) {
-	// 			val currType = value.getClass match {
-	// 				case currType: java.lang.Integer => "Integer"
-	// 				case java.lang.String => "Character"
-	// 				case java.lang.Double => "Numeric"
-	// 				case java.lang.Boolean => "Logical"
-	// 				case _ => "Unknown"
-	// 			}
-	// 			val currIdx = typeHierarchy.indexOf(currType)
-	// 			if (currIdx != -1) {
-	// 				if (typeHierarchy.indexOf(currType) > typeHierarchy.indexOf(highestType)) {
-	// 					highestType = currType
-	// 				}
-	// 			} else {
-	// 				throw new RuntimeException(s"Error: element at index $currIdx has invalid type")
-	// 			}
-	// 		}
-	// 		var vecArr: ArrayBuffer[Type] = highestType match {
-	// 			case "Integer" => values.map(asInteger).to[ArrayBuffer]
-	// 			case "Character" => values.map(asCharacter).to[ArrayBuffer]
-	// 			case "Numeric" => values.map(asNumeric).to[ArrayBuffer]
-	// 			case "Logical" => values.map(asLogical).to[ArrayBuffer]
-	// 		}
-	// 		Vector(vecArr)
-	// 	}
+	// def asLogical(vec: RVector): RVector = {
+	// 	var buf = ArrayBuffer[Type]() ++ vec.data.map(toLogical)
+	// 	return new RVector(buf, "Logical")
+	// }
+
+	// def asNumeric(vec: RVector): RVector = {
+	// 	var buf = ArrayBuffer[Type]() ++ vec.data.map(toNumeric)
+	// 	return new RVector(buf, "Numeric")
+	// }
+	// def asCharacter(vec: RVector): RVector = {
+	// 	var buf = ArrayBuffer[Type]() ++ vec.data.map(toCharacter)
+	// 	return new RVector(buf, "Character")
 	// }
 
 	def getVariableMappings = variableMappings

@@ -8,47 +8,44 @@ import org.scalatest.FlatSpec
 
 class Tests extends FlatSpec {
 
-  "basic_test" should "make new Logical" in {
-    object Test1 extends ScalaR {
+  "Make types" should "make new Types" in {
+    object TypeTest extends ScalaR {
       def run(): Unit = {
-        var bool = new Logical(true) 
-        assert(bool.getType() == "Logical") 
+        val log = new Logical(true)
+        val num_int = new Numeric(0)
+        val num_dub = new Numeric(1.0)
+        val char = new Character("TEST") 
+        val na = NA
+
+        assert(log.getType == "Logical") 
+        assert(num_int.getType == "Numeric") 
+        assert(num_dub.getType == "Numeric") 
+        assert(char.getType == "Character") 
+        assert(na.getType == "Logical")
       }
     }
 
-    Test1.run()
-  }
-
-  "Simple Vector assignment: Integer" should "Create Integer vector from <--" in {
-    object SimpAssignInteger extends ScalaR {
-      def run(): Unit = {
-        's <-- 1
-        assert('s(1) == 1)
-        assert('s.getType() == classTag[Integer].toString())
-      }
-    }
-
-    SimpAssignInteger.run()
+    TypeTest.run()
   }
 
   "Simple Vector assignment: Numeric" should "Create Numeric vector from <--" in {
-    object SimpAssignDouble extends ScalaR {
+    object SimpAssignNumeric extends ScalaR {
       def run(): Unit = {
-        's <-- 1.0
-        assert('s(1) == 1.0)
-        assert('s.getType() == classTag[Numeric].toString())
+        'nvec <-- 1.0
+        assert('nvec(1) == 1.0)
+        assert(typeOf('nvec) == "Numeric")
       }
     }
 
-    SimpAssignDouble.run()
+    SimpAssignNumeric.run()
   }
 
    "Simple Vector assignment: Logical" should "Create Logical vector from <--" in {
     object SimpAssignLogical extends ScalaR {
       def run(): Unit = {
-        's <-- true
-        assert('s(1) == true)
-        assert('s.getType() == val tag = classTag[Logical].toString())
+        'lvec <-- true
+        assert('lvec(1) == true)
+        assert(typeOf('lvec) == "Logical")
       }
     }
 
@@ -60,7 +57,7 @@ class Tests extends FlatSpec {
       def run(): Unit = {
         's <-- "Hello"
         assert('s(1) == "Hello")
-        assert('s.getType() == val tag = classTag[Character].toString())
+        assert(typeOf('s) == "Character")
       }
     }
 
@@ -71,8 +68,9 @@ class Tests extends FlatSpec {
     object CfuncInteger extends ScalaR {
       def run(): Unit = {
         'vec <-- c(1,2,3)
-        assert('vec.length == 3)
+        assert(length('vec) == 3)
         assert('vec(1) == 1 && 'vec(2) == 2 && 'vec(3) == 3)
+        assert(typeOf('vec) == "Numeric")
       }
     }
 
