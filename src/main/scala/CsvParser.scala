@@ -1,6 +1,6 @@
 package scalar
-import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
+import scala.collection.mutable._
 
 object CsvParser {
 
@@ -13,7 +13,7 @@ object CsvParser {
   }
 
 
-  def read_csv(file_name: String, headers: Boolean, delim: String): ArrayBuffer[RVector] {
+  def read_csv(file_name: String, headers: Boolean, delim: String): (ArrayBuffer[RVector], Map[String, (Int,String)]) = {
       val bufferedSource = io.Source.fromFile("/Users/zachkattawar/Desktop/"+ file_name)
       var lines = bufferedSource.getLines.toList
       val headers = lines(0).split(delim).map(_.trim)
@@ -51,16 +51,23 @@ object CsvParser {
       println(bigBuf.toString)
 
       var retBuf = ArrayBuffer[RVector]()
-      val j = 0
+      var j = 0
       for(buff <- bigBuf){
         var vec = new RVector(buff, typeBuf(j))
         retBuf += vec
+        j = j + 1
       }
 
+      var schema_map = Map[String, (Int, String)]()
+      var p = 0
+      for(row <- headers){
+        schema_map(row) = (p, typeBuf(p))
+        p = p + 1
+      }
 
       bufferedSource.close
 
-      retBuf
+      (retBuf, schema_map)
   }
 
   def infer_type(input: String): String = {

@@ -4,7 +4,7 @@
 
 package scalar
 import scala.reflect._
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable._
 import VectorUtils._
 import org.scalatest.FlatSpec
 import CsvParser._
@@ -227,8 +227,12 @@ class Tests extends FlatSpec {
       def run(): Unit = {
         val stream = new java.io.ByteArrayOutputStream()
         Console.withErr(stream) {
-        CsvParser.read_csv("test_i.csv", true, ",")
-        CsvParser.infer_type("False")
+        var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
+        buff = CsvParser.read_csv("test_i.csv", true, ",")
+        var data = new DataFrame(buff._1, buff._2)
+
+        println(data)
+
         }
         // 'vec <-- c(true,true,false)
         // assert(length('vec) == 3)

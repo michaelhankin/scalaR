@@ -1,7 +1,7 @@
 
 package scalar
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable._
 
 // DataFrame object in which each RVector in the list corresponds to a column
 class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, String)]) {
