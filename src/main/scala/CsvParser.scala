@@ -24,30 +24,31 @@ object CsvParser {
 
 
       for(row <- first_data_row.split(delim).map(_.trim)) {
+        if(!row.isEmpty) {
         var col_type = infer_type(row)
         typeBuf += col_type
         var buf = ArrayBuffer[Type]()
         bigBuf += buf
+        }
       }
 
 
       for (i <- 1 until lines.length) {
         val cols = lines(i).split(delim).map(_.trim)
-        for(j <- 0 until cols.length-1){
+        for(j <- 0 until cols.length){
           val rtype = typeBuf(j)
 
           rtype match {
-          case "Logical" => buf += new Logical(b)
-          case "Numeric" => buf += new Numeric(i)
-          case "String"   => buf += new Numeric(d)
-        }
-          bigBuf(j) +=
+          case "Logical" => bigBuf(j) += new Logical(cols(j).toBoolean)
+          case "Numeric" => bigBuf(j) += new Numeric(cols(j).toDouble)
+          case "Character"   => bigBuf(j) += new Character(cols(j).toString)
+          }
         }
         // do whatever you want with the columns here
-        println(s"${cols(0)}|${cols(1)}|${cols(2)}|${cols(3)}")
+       // println(s"${cols(0)}|${cols(1)}|${cols(2)}|${cols(3)}")
       }
 
-      println(bigBuf)
+      println(bigBuf.toString)
 
       bufferedSource.close
   }
@@ -65,7 +66,7 @@ object CsvParser {
     }
 
     println("str")
-      return "String"
+      return "Character"
 
   }
 
