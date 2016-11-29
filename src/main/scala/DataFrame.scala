@@ -40,6 +40,18 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		cols(idx)
 	}
 
+	def getRow(row: Int): ArrayBuffer[Type] = {
+		var rowVals = ArrayBuffer[Type]()
+		if (row < nRows) {
+			for (col <- cols) {
+				rowVals += col(row).storedValue
+			}
+		} else {
+			throw new RuntimeException(s"Error: row index is out of bounds")
+		}
+		rowVals
+	}
+
 	// def apply(colNames: RVector): ArrayBuffer[RVector] = {
 
 	// }
