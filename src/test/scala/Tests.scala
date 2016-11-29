@@ -6,6 +6,7 @@ package scalar
 import scala.reflect._
 import scala.collection.mutable.ArrayBuffer
 import VectorUtils._
+import DataFrameUtils._
 import org.scalatest.FlatSpec
 
 class Tests extends FlatSpec {
@@ -174,6 +175,16 @@ class Tests extends FlatSpec {
 
         val df = new DataFrame(cols, schema)
         assert(df(1, 1) == 4)
+        assert(df(0, 0) == 1)
+        assert(df("fuck") == c(1, 2, 3))
+      }
+    }
+  }
+
+  "DataFrameUtilities test" should "return proper values from utility functions" in {
+    object DFUtilitiesTest extends ScalaR {
+      def run(): Unit = {
+        
       }
     }
   }
