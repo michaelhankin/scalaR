@@ -8,7 +8,7 @@ import TypeUtils._
 
 class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 	def apply(idx: Int): Type = {
-		return data(idx-1)
+		return data(idx - 1)
 	}
 
 	// return slice 

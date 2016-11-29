@@ -3,18 +3,17 @@ import scala.util.Try
 import scala.collection.mutable._
 
 object CsvParser {
+  var path: String = _
 
   def main(args: Array[String]) {
-
     read_csv("test_i.csv", true, ",")
-
     infer_type("2")
-
   }
 
+  def setPath(newPath: String) = { path = newPath }
 
   def read_csv(file_name: String, headers: Boolean, delim: String): (ArrayBuffer[RVector], Map[String, (Int,String)]) = {
-      val bufferedSource = io.Source.fromFile("/Users/zachkattawar/Desktop/"+ file_name)
+      val bufferedSource = io.Source.fromFile(path + file_name)
       var lines = bufferedSource.getLines.toList
       val headers = lines(0).split(delim).map(_.trim)
       var first_data_row = lines(1)

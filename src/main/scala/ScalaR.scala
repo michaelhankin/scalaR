@@ -187,6 +187,13 @@ class ScalaR {
 		return new RVector(buf, "Character")
 	}
 	
+	def setdiff(vec0: RVector, vec1: RVector): RVector = {
+		if (vec0.getType != vec1.getType) {
+			throw new RuntimeException("Error: input vectors have conflicting types")
+		} else {
+			
+		}
+	}
 
 
 	// def asLogical(vec: RVector): RVector = {
