@@ -15,8 +15,8 @@ class ScalaR {
 
 	implicit class VariableWrapper(s: Symbol) {
 		def apply(idx: Int): Any = {
-			val vec = variableMappings(s)
-			return vec(idx).storedValue
+			val v = variableMappings(s)
+			v(idx).storedValue
 		}
 
 		def apply(r: Range): RVector = {
@@ -188,11 +188,13 @@ class ScalaR {
 	}
 	
 	def setdiff(vec0: RVector, vec1: RVector): RVector = {
+		var result = null
 		if (vec0.getType != vec1.getType) {
 			throw new RuntimeException("Error: input vectors have conflicting types")
 		} else {
-			
+			var result = new RVector(vec0.data.diff(vec1.data), vec0.getType)
 		}
+		result
 	}
 
 

@@ -10,8 +10,8 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 
 	def apply(row: Int, col: Int): Any = {
 		val cell = null
-		if (row < nRows && col < nCols) {
-			val cell = cols(col)(row).storedValue
+		if (row <= nRows && col <= nCols) {
+			val cell = cols(col - 1)(row - 1).storedValue
 		} else {
 			throw new RuntimeException(s"Error: undefined cells selected")
 		}
@@ -22,8 +22,8 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		val colVec = null
 		if (col == 0) {
 			println(s"data frame with 0 columns and $nRows rows")
-		} else if (col < nCols) {
-			val colVec = cols(col)
+		} else if (col <= nCols) {
+			val colVec = cols(col - 1)
 		} else {
 			throw new RuntimeException(s"Error: undefined columns selected")
 		}
@@ -42,9 +42,9 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 
 	def getRow(row: Int): ArrayBuffer[Type] = {
 		var rowVals = ArrayBuffer[Type]()
-		if (row < nRows) {
+		if (row <= nRows) {
 			for (col <- cols) {
-				rowVals += col(row).storedValue
+				rowVals += col(row - 1)
 			}
 		} else {
 			throw new RuntimeException(s"Error: row index is out of bounds")

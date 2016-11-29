@@ -176,20 +176,20 @@ class Tests extends FlatSpec {
         val schema = Map[String, (Int, String)]("fuck" -> (1, "Numeric"), "this" -> (2, "Numeric"), "shit" -> (3, "Character"))
 
         val df = new DataFrame(cols, schema)
-        assert(df(1, 1) == 4)
-        assert(df(0, 0) == 1)
+        assert(df(2, 2) == 4)
+        assert(df(1, 1) == 1)
         assert(df("fuck") == c(1, 2, 3))
       }
     }
   }
 
-  "DataFrameUtilities test" should "return proper values from utility functions" in {
-    object DFUtilitiesTest extends ScalaR {
-      def run(): Unit = {
+  // "DataFrameUtilities test" should "return proper values from utility functions" in {
+  //   object DFUtilitiesTest extends ScalaR {
+  //     def run(): Unit = {
         
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
 
   "mean test" should "report mean" in {
     object MeanTest extends ScalaR {

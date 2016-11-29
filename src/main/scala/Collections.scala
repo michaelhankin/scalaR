@@ -18,6 +18,7 @@ class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 
 	def getType: String = vtype
 	def length: Int = data.length
+	def storedValue: ArrayBuffer[Type] = data
 
 	def ==(that: RVector): Boolean = {
 		return this.getType == that.getType && this.data == that.data
