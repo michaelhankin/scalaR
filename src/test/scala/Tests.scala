@@ -4,10 +4,11 @@
 
 package scalar
 import scala.reflect._
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable._
 import VectorUtils._
 import DataFrameUtils._
 import org.scalatest.FlatSpec
+import CsvParser._
 
 class Tests extends FlatSpec {
 
@@ -17,13 +18,13 @@ class Tests extends FlatSpec {
         val log = new Logical(true)
         val num_int = new Numeric(0)
         val num_dub = new Numeric(1.0)
-        val char = new Character("TEST") 
+        val char = new Character("TEST")
         val na = NA
 
-        assert(log.getType == "Logical") 
-        assert(num_int.getType == "Numeric") 
-        assert(num_dub.getType == "Numeric") 
-        assert(char.getType == "Character") 
+        assert(log.getType == "Logical")
+        assert(num_int.getType == "Numeric")
+        assert(num_dub.getType == "Numeric")
+        assert(char.getType == "Character")
         assert(na.getType == "Logical")
       }
     }
@@ -144,7 +145,7 @@ class Tests extends FlatSpec {
     CMix2.run()
   }
 
-  // slicing equality is weird, probably not that important however 
+  // slicing equality is weird, probably not that important however
   "slicing test" should "return proper slice" in {
     object SliceTest extends ScalaR {
       def run(): Unit = {
@@ -167,6 +168,7 @@ class Tests extends FlatSpec {
     SliceTest.run()
   }
 
+
   "DataFrame creation test" should "create a DataFrame" in {
     object DFCreationTest extends ScalaR {
       def run(): Unit = {
@@ -188,6 +190,34 @@ class Tests extends FlatSpec {
       }
     }
   }
+
+  "mean test" should "report mean" in {
+    object MeanTest extends ScalaR {
+      def run(): Unit = {
+        'nvec <-- c(1,2,3,4,5)
+        assert(mean('nvec)(1).storedValue == 3.0)
+        'lvec <-- c(true, false, true, true)
+        assert(mean('lvec)(1).storedValue == 0.75)
+      }
+    }
+
+    MeanTest.run()
+  }
+
+  "standard deviation test" should "report standard deviation" in {
+    object StdDevTest extends ScalaR {
+      def run(): Unit = {
+        'nvec <-- c(1,3,5)
+        assert(sd('nvec)(1).storedValue == 2.0)
+        'lvec <-- c(1,0,1,1)
+        assert(sd('lvec)(1).storedValue == 0.5)
+      }
+    }
+
+    StdDevTest.run()
+  }
+
+
   //   Test2.run()
   // }
 
@@ -201,4 +231,38 @@ class Tests extends FlatSpec {
 
   //   Test2.run()
   // }
+
+
+  "csv parser test" should "correctly make a dataframe" in {
+    object CsvParse {
+      def run(): Unit = {
+        val stream = new java.io.ByteArrayOutputStream()
+        Console.withErr(stream) {
+        var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
+        buff = CsvParser.read_csv("test_i.csv", true, ",")
+        var data = new DataFrame(buff._1, buff._2)
+
+        println(data)
+
+        }
+        // 'vec <-- c(true,true,false)
+        // assert(length('vec) == 3)
+        // assert('vec(1) == true && 'vec(2) == true && 'vec(3) == false)
+        // assert(typeOf('vec) == "Logical")
+      }
+    }
+
+    CsvParse.run()
+  }
+
+
+
+
+
+
+
+
+
+
+
 }
