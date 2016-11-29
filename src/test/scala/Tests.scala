@@ -217,22 +217,6 @@ class Tests extends FlatSpec {
     StdDevTest.run()
   }
 
-
-  //   Test2.run()
-  // }
-
-  // "make vector" should "allow reference to " in {
-  //   object VectorTest extends ScalaR {
-  //     def run(): Unit = {
-  //       's <-- 1
-  //       's(1)
-  //     }
-  //   }
-
-  //   Test2.run()
-  // }
-
-
   "csv parser test" should "correctly make a dataframe" in {
     object CsvParse {
       def run(): Unit = {

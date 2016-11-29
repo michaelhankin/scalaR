@@ -125,14 +125,14 @@ class ScalaR {
 		return sd(vec)
 	}
 
-		def length(vec: RVector): Int = vec.length
+	def length(vec: RVector): Int = vec.length
 
 	def mean(vec: RVector): RVector = {
 		var numvec: RVector = null
 		if (vec.getType == "Logical" || vec.getType == "Numeric"){
 			numvec = asNumeric(vec)
 		}
-		else if (vec.getType == "Charcter")
+		else if (vec.getType == "Character")
 			throw new IllegalArgumentException("Argument is not Numeric")
 
 		var sum = 0.0
@@ -153,7 +153,7 @@ class ScalaR {
 		if (vec.getType == "Logical" || vec.getType == "Numeric") {
 			numvec = asNumeric(vec)
 		}
-		else if (vec.getType == "Charcter")
+		else if (vec.getType == "Character")
 			throw new IllegalArgumentException("Argument is not Numeric")
 
 		val xbar: Double = mean(numvec)(1).storedValue match {
