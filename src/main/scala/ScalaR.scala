@@ -11,15 +11,14 @@ class ScalaR {
 	var variableMappings: Map[Symbol, RVector] = Map[Symbol, RVector]()
 
 	implicit class VariableWrapper(s: Symbol) {
-
 		def apply(idx: Int): Any = {
 			val vec = variableMappings(s)
-			return vec(idx-1).storedValue
+			return vec(idx - 1).storedValue
 		}
 
 		def apply(r: Range): RVector = {
 			val vec = variableMappings(s)
-			return vec(r.min-1, r.max)
+			return vec(r.min - 1, r.max)
 		}
 
 		def <--(value: Any) = {
@@ -98,6 +97,11 @@ class ScalaR {
 			case "Character" => new RVector(buf ++ values.map(toCharacter), "Character")
 		}
 	}
+
+	// Construct a DataFrame object from a sequence of vectors
+	// def data_frame(values: Any*): DataFrame = {
+
+	// }
 
 	// basic R usage functions 
 	def length(s: Symbol): Int = variableMappings(s).length
