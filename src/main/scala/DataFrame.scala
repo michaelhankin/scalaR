@@ -8,24 +8,19 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 	val nRows = cols(0).length
 
 	def apply(row: Int, col: Int): Any = {
+		val cell = null
 		if (row < nRows && col < nCols) {
-			val cell = cols(col)(row)
+			val cell = cols(col)(row).storedValue
 		} else {
-			if (row >= nRows && col >= nCols) {
-				// Return NULL
-			} else if (row >= nRows) {
-				// Return NA
-			} else {
-				throw new RuntimeException(s"Error: undefined columns selected")
-			}
+			throw new RuntimeException(s"Error: undefined cells selected")
 		}
 		cell
 	}
 
 	def apply(col: Int): RVector = {
+		val colVec = null
 		if (col == 0) {
 			println(s"data frame with 0 columns and $nRows rows")
-			// Return NULL (?)
 		} else if (col < nCols) {
 			val colVec = cols(col)
 		} else { 
@@ -35,17 +30,18 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 	}
 
 	def apply(col: String): RVector = {
+		var idx = 0
 		if (schema.contains(col)) {
-			val idx = schema(col)._1
+			idx = schema(col)._1
 		} else {
 			throw new RuntimeException(s"Error: undefined columns selected")
 		}
 		cols(idx)
 	}
 
-	def apply(colNames: RVector): ArrayBuffer[RVector] = {
+	// def apply(colNames: RVector): ArrayBuffer[RVector] = {
 		
-	}
+	// }
 }
 
 object DataFrameUtils {

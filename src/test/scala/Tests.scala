@@ -4,6 +4,7 @@
 
 package scalar
 import scala.reflect._
+import scala.collection.mutable.ArrayBuffer
 import VectorUtils._
 import org.scalatest.FlatSpec
 
@@ -165,6 +166,17 @@ class Tests extends FlatSpec {
     SliceTest.run()
   }
 
+  "DataFrame creation test" should "create a DataFrame" in {
+    object DFCreationTest extends ScalaR {
+      def run(): Unit = {
+        val cols = ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6), c("a", "b", "c"))
+        val schema = Map[String, (Int, String)]("fuck" -> (1, "Numeric"), "this" -> (2, "Numeric"), "shit" -> (3, "Character"))
+
+        val df = new DataFrame(cols, schema)
+        assert(df(1, 1) == 4)
+      }
+    }
+  }
   //   Test2.run()
   // }
 

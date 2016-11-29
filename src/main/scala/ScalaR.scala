@@ -1,6 +1,7 @@
 package scalar
 import scala.collection.mutable.ArrayBuffer
 import TypeUtils._
+import DataFrameUtils._
 
 // TODO: Make implicit Int / Double / Boolean / String to RVector 
 // eg 'v = 1
@@ -96,6 +97,10 @@ class ScalaR {
 			case "Numeric" => new RVector(buf ++ values.map(toNumeric), "Numeric")
 			case "Character" => new RVector(buf ++ values.map(toCharacter), "Character")
 		}
+	}
+
+	def print(s: Symbol) = {
+
 	}
 
 	// Construct a DataFrame object from a sequence of vectors
