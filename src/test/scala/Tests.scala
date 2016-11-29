@@ -167,6 +167,7 @@ class Tests extends FlatSpec {
     SliceTest.run()
   }
 
+
   "DataFrame creation test" should "create a DataFrame" in {
     object DFCreationTest extends ScalaR {
       def run(): Unit = {
@@ -178,6 +179,34 @@ class Tests extends FlatSpec {
       }
     }
   }
+
+  "mean test" should "report mean" in {
+    object MeanTest extends ScalaR {
+      def run(): Unit = {
+        'nvec <-- c(1,2,3,4,5)
+        assert(mean('nvec)(1).storedValue == 3.0)
+        'lvec <-- c(true, false, true, true)
+        assert(mean('lvec)(1).storedValue == 0.75)
+      }
+    }
+
+    MeanTest.run()
+  }
+
+  "standard deviation test" should "report standard deviation" in {
+    object StdDevTest extends ScalaR {
+      def run(): Unit = {
+        'nvec <-- c(1,3,5)
+        assert(sd('nvec)(1).storedValue == 2.0)
+        'lvec <-- c(1,0,1,1)
+        assert(sd('lvec)(1).storedValue == 0.5)
+      }
+    }
+
+    StdDevTest.run()
+  }
+
+
   //   Test2.run()
   // }
 
