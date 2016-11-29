@@ -32,7 +32,7 @@ class Character(value: String) extends Type {
 class NAType extends Type {
 	type T = String
 	var curType: String = "Logical"
-	def storedValue: String = ""  
+	def storedValue: String = "NA"  
 	def getType: String = return curType
 	def setType(t: String) = t match {
 		case "Logical" => curType = "Logical"
