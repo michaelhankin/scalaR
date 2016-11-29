@@ -7,6 +7,7 @@ import scala.reflect._
 import scala.collection.mutable.ArrayBuffer
 import VectorUtils._
 import org.scalatest.FlatSpec
+import CsvParser._
 
 class Tests extends FlatSpec {
 
@@ -16,13 +17,13 @@ class Tests extends FlatSpec {
         val log = new Logical(true)
         val num_int = new Numeric(0)
         val num_dub = new Numeric(1.0)
-        val char = new Character("TEST") 
+        val char = new Character("TEST")
         val na = NA
 
-        assert(log.getType == "Logical") 
-        assert(num_int.getType == "Numeric") 
-        assert(num_dub.getType == "Numeric") 
-        assert(char.getType == "Character") 
+        assert(log.getType == "Logical")
+        assert(num_int.getType == "Numeric")
+        assert(num_dub.getType == "Numeric")
+        assert(char.getType == "Character")
         assert(na.getType == "Logical")
       }
     }
@@ -143,7 +144,7 @@ class Tests extends FlatSpec {
     CMix2.run()
   }
 
-  // slicing equality is weird, probably not that important however 
+  // slicing equality is weird, probably not that important however
   "slicing test" should "return proper slice" in {
     object SliceTest extends ScalaR {
       def run(): Unit = {
@@ -190,4 +191,34 @@ class Tests extends FlatSpec {
 
   //   Test2.run()
   // }
+
+
+  "csv parser test" should "correctly make a dataframe" in {
+    object CsvParse {
+      def run(): Unit = {
+        val stream = new java.io.ByteArrayOutputStream()
+        Console.withErr(stream) {
+        CsvParser.read_csv("test_i.csv", true, ",")
+        CsvParser.infer_type("False")
+        }
+        // 'vec <-- c(true,true,false)
+        // assert(length('vec) == 3)
+        // assert('vec(1) == true && 'vec(2) == true && 'vec(3) == false)
+        // assert(typeOf('vec) == "Logical")
+      }
+    }
+
+    CsvParse.run()
+  }
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -1,3 +1,4 @@
+
 package scalar
 
 import scala.collection.mutable.ArrayBuffer
@@ -23,7 +24,7 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 			println(s"data frame with 0 columns and $nRows rows")
 		} else if (col < nCols) {
 			val colVec = cols(col)
-		} else { 
+		} else {
 			throw new RuntimeException(s"Error: undefined columns selected")
 		}
 		colVec
@@ -40,7 +41,7 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 	}
 
 	// def apply(colNames: RVector): ArrayBuffer[RVector] = {
-		
+
 	// }
 }
 
@@ -48,3 +49,4 @@ object DataFrameUtils {
 	def nrows(df: DataFrame): Int = df.nRows
 	def ncols(df: DataFrame): Int = df.nCols
 }
+
