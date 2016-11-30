@@ -247,7 +247,7 @@ class Tests extends FlatSpec {
         Console.withErr(stream) {
         var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
         setPath("./")
-        buff = CsvParser.read_csv("test_i.csv", true, ",")
+        buff = CsvParser.read_csv("test_i.csv", true, ",", "?")
         println(buff)
         var data = new DataFrame(buff._1, buff._2)
         data.printdf()
@@ -282,9 +282,7 @@ class Tests extends FlatSpec {
   "plotting" should "plot" in {
     object PlotTest extends ScalaR {
       def run(): Unit = {
-        scatter((List[Int](1,2,3), List[Int](4,5,6)))
-        title("Numbers!")
-        //regression((0 until 100).map(x => x + scala.util.Random.nextInt(25)))
+        plot(c(1,2,3,4,5), c(5,6,7,8,9), main="A Plot", xlab="X", ylab="y")
       }
     }
 

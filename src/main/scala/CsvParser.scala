@@ -12,7 +12,8 @@ object CsvParser {
 
   def setPath(newPath: String) = { path = newPath }
 
-  def read_csv(file_name: String, headers: Boolean, delim: String): (ArrayBuffer[RVector], Map[String, (Int,String)]) = {
+  def read_csv(file_name: String, headers: Boolean, delim: String, naString: String = ""): 
+  (ArrayBuffer[RVector], Map[String, (Int,String)]) = {
       val bufferedSource = io.Source.fromFile(path + file_name)
       var lines = bufferedSource.getLines.toList
       val headers = lines(0).split(delim).map(_.trim)
@@ -37,12 +38,17 @@ object CsvParser {
         for(j <- 0 until cols.length){
           val rtype = typeBuf(j)
 
+          if (cols(j).toLowerCase == naString) {
+            bigBuf(j) += new NAType
+          } else {
+
           rtype match {
           case "Logical" => bigBuf(j) += new Logical(cols(j).toBoolean)
           case "Numeric" => bigBuf(j) += new Numeric(cols(j).toDouble)
           case "Character"   => bigBuf(j) += new Character(cols(j).toString)
           }
         }
+      }
         // do whatever you want with the columns here
        // println(s"${cols(0)}|${cols(1)}|${cols(2)}|${cols(3)}")
       }
