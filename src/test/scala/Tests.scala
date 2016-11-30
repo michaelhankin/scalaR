@@ -249,7 +249,8 @@ class Tests extends FlatSpec {
         buff = CsvParser.read_csv("test_i.csv", true, ",")
         println(buff)
         var data = new DataFrame(buff._1, buff._2)
-        println(data)
+        data.printdf()
+
         }
       }
     }
