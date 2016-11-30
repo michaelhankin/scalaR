@@ -6,13 +6,13 @@ object CsvParser {
   var path: String = _
 
   def main(args: Array[String]) {
-    read_csv("test_i.csv", true, ",")
+    read_csv("test_i.csv", true, ",", "na")
     infer_type("2")
   }
 
   def setPath(newPath: String) = { path = newPath }
 
-  def read_csv(file_name: String, headers: Boolean, delim: String): (ArrayBuffer[RVector], Map[String, (Int,String)]) = {
+  def read_csv(file_name: String, headers: Boolean, delim: String, naString: String): (ArrayBuffer[RVector], Map[String, (Int,String)]) = {
       val bufferedSource = io.Source.fromFile(path + file_name)
       var lines = bufferedSource.getLines.toList
       val headers = lines(0).split(delim).map(_.trim)
@@ -36,6 +36,10 @@ object CsvParser {
         val cols = lines(i).split(delim).map(_.trim)
         for(j <- 0 until cols.length){
           val rtype = typeBuf(j)
+
+          if(cols(j).toLowerCase == naString){
+            bigBuf(j) += new NAType
+          }
 
           rtype match {
           case "Logical" => bigBuf(j) += new Logical(cols(j).toBoolean)

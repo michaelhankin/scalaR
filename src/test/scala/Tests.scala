@@ -224,7 +224,7 @@ class Tests extends FlatSpec {
         Console.withErr(stream) {
         var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
         setPath("/Users/zachkattawar/scalaR/")
-        buff = CsvParser.read_csv("test_i.csv", true, ",")
+        buff = CsvParser.read_csv("test_i.csv", true, ",", "na")
         var data = new DataFrame(buff._1, buff._2)
 
         println(data)
