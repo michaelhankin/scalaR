@@ -217,14 +217,14 @@ class Tests extends FlatSpec {
     StdDevTest.run()
   }
 
-  
-  "csv parser test2" should "correctly make a dataframe" in {
-    object CsvParse2 {
+
+  "csv parser test" should "correctly make a dataframe" in {
+    object CsvParse {
       def run(): Unit = {
         val stream = new java.io.ByteArrayOutputStream()
         Console.withErr(stream) {
         var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
-        setPath("/Users/zachkattawar/scalaR/")
+        setPath("./")
         buff = CsvParser.read_csv("test_i.csv", true, ",", "na")
         var data = new DataFrame(buff._1, buff._2)
         data.printdf()
