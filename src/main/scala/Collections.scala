@@ -23,6 +23,23 @@ class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 	def ==(that: RVector): Boolean = {
 		return this.getType == that.getType && this.data == that.data
 	}
+
+	def getColWidth: Int = {
+		var max = 0
+		for (v <- this.data) {
+			if (v.storedValue.toString.length > max)
+				max = v.storedValue.toString.length
+		}
+		return max 
+	}
+
+	override def toString: String = {
+		var str = "[1]"
+		for (v <- this.data) {
+			str += s" ${v.toString}"
+		}
+		return str
+	}
 }
 
 class RList(value: Type*) {

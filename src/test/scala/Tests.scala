@@ -9,6 +9,7 @@ import VectorUtils._
 import DataFrameUtils._
 import org.scalatest.FlatSpec
 import CsvParser._
+import com.quantifind.charts.Highcharts._
 
 class Tests extends FlatSpec {
 
@@ -154,8 +155,8 @@ class Tests extends FlatSpec {
 
         val stream = new java.io.ByteArrayOutputStream()
         Console.withErr(stream) {
-        println(s"${x}")
-        println(s"${c(1.0, 2.0, 3.0).data}")
+      //  println(s"${x}")
+      //  println(s"${c(1.0, 2.0, 3.0).data}")
         }
 
         'vec <-- c(1,2,3,4,5)
@@ -183,6 +184,7 @@ class Tests extends FlatSpec {
     }
   }
 
+<<<<<<< HEAD
   "DataFrameUtilities test" should "return proper values from utility functions" in {
     object DFUtilitiesTest extends ScalaR {
       def run(): Unit = {
@@ -195,6 +197,15 @@ class Tests extends FlatSpec {
       }
     }
   }
+=======
+  // "DataFrameUtilities test" should "return proper values from utility functions" in {
+  //   object DFUtilitiesTest extends ScalaR {
+  //     def run(): Unit = {
+
+  //     }
+  //   }
+  // }
+>>>>>>> 41ae4c1a8db55516e39071bfa1d3c128ff4b32bf
 
   "mean test" should "report mean" in {
     object MeanTest extends ScalaR {
@@ -222,36 +233,54 @@ class Tests extends FlatSpec {
     StdDevTest.run()
   }
 
+
   "csv parser test" should "correctly make a dataframe" in {
     object CsvParse {
       def run(): Unit = {
         val stream = new java.io.ByteArrayOutputStream()
         Console.withErr(stream) {
         var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
-        buff = CsvParser.read_csv("test_i.csv", true, ",")
+        setPath("./")
+        buff = CsvParser.read_csv("test_i.csv", true, ",", "na")
         var data = new DataFrame(buff._1, buff._2)
-
-        println(data)
+        data.printdf()
 
         }
-        // 'vec <-- c(true,true,false)
-        // assert(length('vec) == 3)
-        // assert('vec(1) == true && 'vec(2) == true && 'vec(3) == false)
-        // assert(typeOf('vec) == "Logical")
       }
     }
 
-    CsvParse.run()
+    CsvParse2.run()
   }
 
+  "RVector toString" should "get string repr" in {
+    object ToStringRVec extends ScalaR {
+      def run(): Unit = {
+        assert(c(1,2,3,4,5).toString == "[1] 1.0 2.0 3.0 4.0 5.0")
+      }
+    }
 
+    ToStringRVec.run()
+  }
 
+  "RVector colwidth" should "get longest column" in {
+    object ColWidthTest extends ScalaR {
+      def run(): Unit = {
+        assert(c("Toyota", "Honda", "Hyundai").getColWidth == 7)
+      }
+    }
 
+    ColWidthTest.run()
+  }
 
+  "plotting" should "plot" in {
+    object PlotTest extends ScalaR {
+      def run(): Unit = {
+        plot(c(1,2,3,4,5), c(5,6,7,8,9), main="A Plot", xlab="X", ylab="y")
+      }
+    }
 
-
-
-
+    PlotTest.run()
+  }
 
 
 }
