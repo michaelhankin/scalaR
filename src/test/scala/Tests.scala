@@ -217,27 +217,45 @@ class Tests extends FlatSpec {
     StdDevTest.run()
   }
 
-  "csv parser test" should "correctly make a dataframe" in {
-    object CsvParse {
+  // "csv parser test" should "correctly make a dataframe" in {
+  //   object CsvParse {
+  //     def run(): Unit = {
+  //       val stream = new java.io.ByteArrayOutputStream()
+  //       Console.withErr(stream) {
+  //       var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
+  //       buff = CsvParser.read_csv("test_i.csv", true, ",")
+  //       var data = new DataFrame(buff._1, buff._2)
+  //
+  //       println(data)
+  //
+  //       }
+  //       // 'vec <-- c(true,true,false)
+  //       // assert(length('vec) == 3)
+  //       // assert('vec(1) == true && 'vec(2) == true && 'vec(3) == false)
+  //       // assert(typeOf('vec) == "Logical")
+  //     }
+  //   }
+  //
+  //   CsvParse.run()
+  // }
+
+  "csv parser test2" should "correctly make a dataframe" in {
+    object CsvParse2 {
       def run(): Unit = {
         val stream = new java.io.ByteArrayOutputStream()
         Console.withErr(stream) {
         var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
-        setPath("/Users/zachkattawar/scalaR/")
+        setPath("./")
         buff = CsvParser.read_csv("test_i.csv", true, ",")
+        println(buff)
         var data = new DataFrame(buff._1, buff._2)
-
         println(data)
-
         }
-
       }
     }
 
-    CsvParse.run()
+    CsvParse2.run()
   }
-
-
 
 
 
