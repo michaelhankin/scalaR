@@ -84,7 +84,7 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 			widths(i) = if (w > headerWidths(i)) w else headerWidths(i)
 		}
 
-		// print header 
+		// print header
 		var sb = new StringBuilder()
 		for ((c,j) <- columns.zipWithIndex) {
 			for (i <- 0 until widths(j)-c.length){
@@ -95,7 +95,7 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		}
 		sb ++= "\n"
 
-		// print data 
+		// print data
 		for (i <- 1 until nRows+1) {
 			val row = this.getRowZeroIndex(i)
 			for ((r,k) <- row.zipWithIndex) {
@@ -111,15 +111,9 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 
 		println(sb)
 	}
-
-
-	// def apply(colNames: RVector): ArrayBuffer[RVector] = {
-
-	// }
 }
 
 object DataFrameUtils {
 	def nrows(df: DataFrame): Int = df.nRows
 	def ncols(df: DataFrame): Int = df.nCols
 }
-
