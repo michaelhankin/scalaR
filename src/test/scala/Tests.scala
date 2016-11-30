@@ -217,8 +217,30 @@ class Tests extends FlatSpec {
     StdDevTest.run()
   }
 
-  "csv parser test" should "correctly make a dataframe" in {
-    object CsvParse {
+  // "csv parser test" should "correctly make a dataframe" in {
+  //   object CsvParse {
+  //     def run(): Unit = {
+  //       val stream = new java.io.ByteArrayOutputStream()
+  //       Console.withErr(stream) {
+  //       var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
+  //       buff = CsvParser.read_csv("test_i.csv", true, ",")
+  //       var data = new DataFrame(buff._1, buff._2)
+  //
+  //       println(data)
+  //
+  //       }
+  //       // 'vec <-- c(true,true,false)
+  //       // assert(length('vec) == 3)
+  //       // assert('vec(1) == true && 'vec(2) == true && 'vec(3) == false)
+  //       // assert(typeOf('vec) == "Logical")
+  //     }
+  //   }
+  //
+  //   CsvParse.run()
+  // }
+
+  "csv parser test2" should "correctly make a dataframe" in {
+    object CsvParse2 {
       def run(): Unit = {
         val stream = new java.io.ByteArrayOutputStream()
         Console.withErr(stream) {
@@ -226,18 +248,34 @@ class Tests extends FlatSpec {
         setPath("/Users/zachkattawar/scalaR/")
         buff = CsvParser.read_csv("test_i.csv", true, ",", "na")
         var data = new DataFrame(buff._1, buff._2)
-
-        println(data)
+        data.printdf()
 
         }
-
       }
     }
 
-    CsvParse.run()
+    CsvParse2.run()
   }
 
+  "RVector toString" should "get string repr" in {
+    object ToStringRVec extends ScalaR {
+      def run(): Unit = {
+        assert(c(1,2,3,4,5).toString == "[1] 1.0 2.0 3.0 4.0 5.0")
+      }
+    }
 
+    ToStringRVec.run()
+  }
+
+  "RVector colwidth" should "get longest column" in {
+    object ColWidthTest extends ScalaR {
+      def run(): Unit = {
+        assert(c("Toyota", "Honda", "Hyundai").getColWidth == 7)
+      }
+    }
+
+    ColWidthTest.run()
+  }
 
 
 
