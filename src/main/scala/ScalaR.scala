@@ -3,6 +3,7 @@ import scala.collection.mutable.ArrayBuffer
 import TypeUtils._
 import DataFrameUtils._
 import VectorUtils._
+import com.quantifind.charts.Highcharts._
 
 
 // TODO: Make implicit Int / Double / Boolean / String to RVector
@@ -115,7 +116,7 @@ class ScalaR {
 		if (!foundVec) {
 			val df = dfMappings.get(s)
 			df match {
-				case Some(value) => value.printdf()
+				case Some(value) => value .printdf()
 				case None => throw new Exception(s"object '${s}' not found")
 			}
 		}
@@ -184,6 +185,13 @@ class ScalaR {
 	// 	val v2 = variableMappings(s2)
 	// 	return minus(v1, v2)
 	// }
+
+	def plot(x: RVector, y: RVector, main: String = "", xlab: String = "", ylab: String = "") = {
+		scatter((unpackNumericVector(x), unpackNumericVector(y)))
+		title(main)
+		xAxis(xlab)
+		yAxis(ylab)
+	}
 
 	def length(vec: RVector): Int = vec.length
 

@@ -9,6 +9,7 @@ import VectorUtils._
 import DataFrameUtils._
 import org.scalatest.FlatSpec
 import CsvParser._
+import com.quantifind.charts.Highcharts._
 
 class Tests extends FlatSpec {
 
@@ -256,12 +257,15 @@ class Tests extends FlatSpec {
     ColWidthTest.run()
   }
 
+  "plotting" should "plot" in {
+    object PlotTest extends ScalaR {
+      def run(): Unit = {
+        plot(c(1,2,3,4,5), c(5,6,7,8,9), main="A Plot", xlab="X", ylab="y")
+      }
+    }
 
-
-
-
-
-
+    PlotTest.run()
+  }
 
 
 }
