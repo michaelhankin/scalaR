@@ -47,7 +47,7 @@ object CsvParser {
        // println(s"${cols(0)}|${cols(1)}|${cols(2)}|${cols(3)}")
       }
 
-      println(bigBuf.toString)
+      //println(bigBuf.toString)
 
       var retBuf = ArrayBuffer[RVector]()
       var j = 0
@@ -72,16 +72,13 @@ object CsvParser {
   def infer_type(input: String): String = {
 
     if(Try{input.toDouble}.isSuccess){
-      println("num")
       return "Numeric"
     }
 
     if(input.toLowerCase() == "true" || input.toLowerCase() == "false"){
-    println("log")
       return "Logical"
     }
 
-    println("str")
       return "Character"
 
   }
