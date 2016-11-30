@@ -9,7 +9,8 @@ scalaVersion := "2.11.5"
 libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % "3.0.0",
   "org.scalatest" %% "scalatest" % "3.0.0" % "test" withSources() withJavadoc(),
-  "org.scalacheck" %% "scalacheck" % "1.12.1" % "test" withSources() withJavadoc()
+  "org.scalacheck" %% "scalacheck" % "1.12.1" % "test" withSources() withJavadoc(),
+  "com.quantifind" %% "wisp" % "0.0.4"
   // // Last stable release
   // "org.scalanlp" %% "breeze" % "0.12",
   

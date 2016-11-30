@@ -115,7 +115,7 @@ class ScalaR {
 		if (!foundVec) {
 			val df = dfMappings.get(s)
 			df match {
-				case Some(value) => value.printdf()
+				case Some(value) => value .printdf()
 				case None => throw new Exception(s"object '${s}' not found")
 			}
 		}
@@ -140,6 +140,8 @@ class ScalaR {
 		val vec = variableMappings(s)
 		return sd(vec)
 	}
+
+	def plot(x: RVector, y: RVector, main: String = "", xlab: String = "", ylab: String = "")
 
 	def length(vec: RVector): Int = vec.length
 

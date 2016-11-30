@@ -9,6 +9,7 @@ import VectorUtils._
 import DataFrameUtils._
 import org.scalatest.FlatSpec
 import CsvParser._
+import com.quantifind.charts.Highcharts._
 
 class Tests extends FlatSpec {
 
@@ -278,12 +279,17 @@ class Tests extends FlatSpec {
     ColWidthTest.run()
   }
 
+  "plotting" should "plot" in {
+    object PlotTest extends ScalaR {
+      def run(): Unit = {
+        scatter((List[Int](1,2,3), List[Int](4,5,6)))
+        title("Numbers!")
+        //regression((0 until 100).map(x => x + scala.util.Random.nextInt(25)))
+      }
+    }
 
-
-
-
-
-
+    PlotTest.run()
+  }
 
 
 }
