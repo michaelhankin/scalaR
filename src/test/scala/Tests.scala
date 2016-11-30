@@ -239,6 +239,26 @@ class Tests extends FlatSpec {
     CsvParse.run()
   }
 
+  "RVector toString" should "get string repr" in {
+    object ToStringRVec extends ScalaR {
+      def run(): Unit = {
+        assert(c(1,2,3,4,5).toString == "[1] 1.0 2.0 3.0 4.0 5.0")
+      }
+    }
+
+    ToStringRVec.run()
+  }
+
+  "RVector colwidth" should "get longest column" in {
+    object ColWidthTest extends ScalaR {
+      def run(): Unit = {
+        assert(c("Toyota", "Honda", "Hyundai").getColWidth == 7)
+      }
+    }
+
+    ColWidthTest.run()
+  }
+
 
 
 

@@ -12,6 +12,7 @@ import VectorUtils._
 class ScalaR {
 	def NA = new NAType
 	var variableMappings: Map[Symbol, RVector] = Map[Symbol, RVector]()
+	var dfMappings: Map[Symbol, DataFrame] = Map[Symbol, DataFrame]()
 
 	implicit class VariableWrapper(s: Symbol) {
 		def apply(idx: Int): Any = {
@@ -103,6 +104,21 @@ class ScalaR {
 
 	def print(s: Symbol) = {
 
+		var foundVec = false
+
+		val vec = variableMappings.get(s)
+		vec match {
+  			case Some(value) => println(value)
+  			case None => foundVec = true
+		}
+
+		if (!foundVec) {
+			val df = dfMappings.get(s)
+			df match {
+				case Some(value) => value.printdf()
+				case None => throw new Exception(s"object '${s}' not found")
+			}
+		}
 	}
 
 	// Construct a DataFrame object from a sequence of vectors

@@ -52,6 +52,10 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		rowVals
 	}
 
+	def printdf() = {
+		println("Helo")
+	}
+
 	// def apply(colNames: RVector): ArrayBuffer[RVector] = {
 
 	// }
