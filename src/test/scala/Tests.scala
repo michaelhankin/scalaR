@@ -1,6 +1,6 @@
 /**
-  * Created by scott on 11/14/16.
-  */
+* Created by scott on 11/14/16.
+*/
 
 package scalar
 import scala.reflect._
@@ -45,7 +45,7 @@ class Tests extends FlatSpec {
     SimpAssignNumeric.run()
   }
 
-   "Simple Vector assignment: Logical" should "Create Logical vector from <--" in {
+  "Simple Vector assignment: Logical" should "Create Logical vector from <--" in {
     object SimpAssignLogical extends ScalaR {
       def run(): Unit = {
         'lvec <-- true
@@ -155,8 +155,8 @@ class Tests extends FlatSpec {
 
         val stream = new java.io.ByteArrayOutputStream()
         Console.withErr(stream) {
-      //  println(s"${x}")
-      //  println(s"${c(1.0, 2.0, 3.0).data}")
+          //  println(s"${x}")
+          //  println(s"${c(1.0, 2.0, 3.0).data}")
         }
 
         'vec <-- c(1,2,3,4,5)
@@ -184,7 +184,6 @@ class Tests extends FlatSpec {
     }
   }
 
-<<<<<<< HEAD
   "DataFrameUtilities test" should "return proper values from utility functions" in {
     object DFUtilitiesTest extends ScalaR {
       def run(): Unit = {
@@ -197,15 +196,6 @@ class Tests extends FlatSpec {
       }
     }
   }
-=======
-  // "DataFrameUtilities test" should "return proper values from utility functions" in {
-  //   object DFUtilitiesTest extends ScalaR {
-  //     def run(): Unit = {
-
-  //     }
-  //   }
-  // }
->>>>>>> 41ae4c1a8db55516e39071bfa1d3c128ff4b32bf
 
   "mean test" should "report mean" in {
     object MeanTest extends ScalaR {
@@ -239,17 +229,16 @@ class Tests extends FlatSpec {
       def run(): Unit = {
         val stream = new java.io.ByteArrayOutputStream()
         Console.withErr(stream) {
-        var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
-        setPath("./")
-        buff = CsvParser.read_csv("test_i.csv", true, ",", "na")
-        var data = new DataFrame(buff._1, buff._2)
-        data.printdf()
-
+          var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
+          setPath("./")
+          buff = CsvParser.read_csv("test_i.csv", true, ",", "na")
+          var data = new DataFrame(buff._1, buff._2)
+          data.printdf()
         }
       }
     }
 
-    CsvParse2.run()
+    CsvParse.run()
   }
 
   "RVector toString" should "get string repr" in {
@@ -282,5 +271,101 @@ class Tests extends FlatSpec {
     PlotTest.run()
   }
 
+  "sum function" should "sum all numerical values in a vector" in {
+    object SumTest extends ScalaR {
+      def run(): Unit = {
+        assert(sum(c(1,2,3,4,5))(1).storedValue == 15.0)
+      }
+    }
 
+    SumTest.run()
+  }
+
+  "sum function" should "return NA if any value is NA" in {
+    object SumWithNaTest extends ScalaR {
+      def run(): Unit = {
+        assert(sum(c(1,NA,3,4,5))(1).storedValue == "NA")
+      }
+    }
+
+    SumWithNaTest.run()
+  }
+
+  "sum function" should "throw exception if any value is non-numerical" in {
+    object SumWithStrTest extends ScalaR {
+      def run(): Unit = {
+        intercept[IllegalArgumentException] {
+          sum(c("str1", "str2"))
+        }
+      }
+    }
+
+    SumWithStrTest.run()
+  }
+
+  "+ operator" should "add 2 vectors together" in {
+    object PlusTest extends ScalaR {
+      def run(): Unit = {
+        println(c(1,2,3) + c(4,5,6))
+      }
+    }
+
+    PlusTest.run()
+  }
+
+  "+ operator" should "throw exception if operands have different lengths" in {
+    object PlusTest2 extends ScalaR {
+      def run(): Unit = {
+        intercept[IllegalArgumentException] {
+          c(1,2,3) + c(1,2,3,4)
+        }
+      }
+    }
+
+    PlusTest2.run()
+  }
+
+  "+ operator" should "returns NA if one index is NA" in {
+    object PlusWithNATest extends ScalaR {
+      def run(): Unit = {
+        println(c(1,2,3) + c(4,5,NA))
+        println(c(NA, 2,3) + c(NA, 2,3))
+      }
+    }
+
+    PlusWithNATest.run()
+  }
+
+  "- operator" should "calculates the difference between 2 vectors" in {
+    object MinusTest extends ScalaR {
+      def run(): Unit = {
+        println(c(7,8,9) - c(4,5,6))
+      }
+    }
+
+    MinusTest.run()
+  }
+
+  "- operator" should "throw exception if operands have different lengths" in {
+    object MinusTest2 extends ScalaR {
+      def run(): Unit = {
+        intercept[IllegalArgumentException] {
+          c(1,2,3) - c(1,2,3,4)
+        }
+      }
+    }
+
+    MinusTest2.run()
+  }
+
+  "- operator" should "returns NA if one index is NA" in {
+    object MinusWithNATest extends ScalaR {
+      def run(): Unit = {
+        println(c(1,2,3) - c(4,5,NA))
+        println(c(NA, 2,3) - c(NA, 2,3))
+      }
+    }
+
+  MinusWithNATest.run()
+  }
 }

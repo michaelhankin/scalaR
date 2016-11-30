@@ -11,7 +11,7 @@ class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 		return data(idx - 1)
 	}
 
-	// return slice 
+	// return slice
 	def apply(idxMin: Int, idxMax: Int): RVector = {
 		return new RVector(data.slice(idxMin, idxMax), vtype)
 	}
@@ -30,7 +30,7 @@ class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 			if (v.storedValue.toString.length > max)
 				max = v.storedValue.toString.length
 		}
-		return max 
+		return max
 	}
 
 	override def toString: String = {
@@ -39,6 +39,64 @@ class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 			str += s" ${v.toString}"
 		}
 		return str
+	}
+
+	def +(that: RVector) : RVector = {
+		if (this.getType == "Character" || this.getType == "Logical")
+			throw new IllegalArgumentException("Argument is not Numeric")
+
+		if (that.getType == "Character" || that.getType == "Logical")
+			throw new IllegalArgumentException("Argument is not Numeric")
+
+		if(this.data.length != that.data.length)
+		throw new IllegalArgumentException("Arguments are not of the same length")
+
+		var ab = new ArrayBuffer[Type]()
+
+		for (i <- 0 until this.data.length) {
+			if (this.data(i).storedValue == "NA" || that.data(i).storedValue == "NA")
+				ab += new NAType()
+			else {
+				var sum:Double = 0
+				this.data(i).storedValue match {
+					case d: Double => sum += d
+				}
+				that.data(i).storedValue match {
+					case d: Double => sum += d
+				}
+				ab += new Numeric(sum)
+			}
+		}
+		return new RVector(ab, "Numeric")
+	}
+
+	def -(that: RVector) : RVector = {
+		if (this.getType == "Character" || this.getType == "Logical")
+			throw new IllegalArgumentException("Argument is not Numeric")
+
+		if (that.getType == "Character" || that.getType == "Logical")
+			throw new IllegalArgumentException("Argument is not Numeric")
+
+		if(this.data.length != that.data.length)
+			throw new IllegalArgumentException("Arguments are not of the same length")
+
+		var ab = new ArrayBuffer[Type]()
+
+		for (i <- 0 until this.data.length) {
+			if (this.data(i).storedValue == "NA" || that.data(i).storedValue == "NA")
+			ab += new NAType()
+			else {
+				var diff:Double = 0
+				this.data(i).storedValue match {
+					case d: Double => diff = d
+				}
+				that.data(i).storedValue match {
+					case d: Double => diff -= d
+				}
+				ab += new Numeric(diff)
+			}
+		}
+		return new RVector(ab, "Numeric")
 	}
 }
 
@@ -59,12 +117,12 @@ object VectorUtils {
 			}
 		}
 		return retval
-	} 
+	}
 
 	def unpackLogicalVector(vec: RVector): List[Boolean] = {
 		if (vec.getType != "Logical")
 			throw new IllegalArgumentException("Vector is not Logical")
-		
+
 		var retval = List[Boolean]()
 		for (v <- vec.data) {
 			v.storedValue match {
