@@ -2,6 +2,7 @@
 package scalar
 
 import scala.collection.mutable._
+import VectorUtils._
 
 // DataFrame object in which each RVector in the list corresponds to a column
 class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, String)]) {
@@ -52,13 +53,18 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		rowVals
 	}
 
-	// def apply(colNames: RVector): ArrayBuffer[RVector] = {
-
-	// }
+	def apply(colNames: RVector): ArrayBuffer[RVector] = {
+		val colArr = unpackCharacterVector(colNames)
+		var result = ArrayBuffer[RVector]()
+		for (col <- colArr) {
+			result +:= this.apply(col)
+		}
+		result
+	}
 }
 
 object DataFrameUtils {
-	def nrows(df: DataFrame): Int = df.nRows
-	def ncols(df: DataFrame): Int = df.nCols
+	def nrow(df: DataFrame): Int = df.nRows
+	def ncol(df: DataFrame): Int = df.nCols
 }
 

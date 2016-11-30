@@ -131,8 +131,7 @@ class ScalaR {
 		var numvec: RVector = null
 		if (vec.getType == "Logical" || vec.getType == "Numeric"){
 			numvec = asNumeric(vec)
-		}
-		else if (vec.getType == "Character")
+		} else if (vec.getType == "Character")
 			throw new IllegalArgumentException("Argument is not Numeric")
 
 		var sum = 0.0

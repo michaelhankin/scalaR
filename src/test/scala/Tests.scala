@@ -183,13 +183,18 @@ class Tests extends FlatSpec {
     }
   }
 
-  // "DataFrameUtilities test" should "return proper values from utility functions" in {
-  //   object DFUtilitiesTest extends ScalaR {
-  //     def run(): Unit = {
-        
-  //     }
-  //   }
-  // }
+  "DataFrameUtilities test" should "return proper values from utility functions" in {
+    object DFUtilitiesTest extends ScalaR {
+      def run(): Unit = {
+        val cols = ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6), c("a", "b", "c"))
+        val schema = Map[String, (Int, String)]("fuck" -> (1, "Numeric"), "this" -> (2, "Numeric"), "shit" -> (3, "Character"))
+
+        val df = new DataFrame(cols, schema)
+        assert(nrow(df) == 3)
+        assert(ncol(df) == 3)
+      }
+    }
+  }
 
   "mean test" should "report mean" in {
     object MeanTest extends ScalaR {
