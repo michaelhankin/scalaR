@@ -169,17 +169,28 @@ class Tests extends FlatSpec {
     SliceTest.run()
   }
 
+  "setdiff test" should "return the difference between two vectors" in {
+    object SetDiffTest extends ScalaR {
+      def run(): Unit = {
+        'v1 <-- c(1, 2, 3, 4, 5, 6, 7)
+        'v2 <-- c(3, 4, 5, 6, 7, 8, 9)
+        assert(setdiff('v1, 'v2) == c(1, 2, 8, 9))
+      }
+    }
+  }
 
   "DataFrame creation test" should "create a DataFrame" in {
     object DFCreationTest extends ScalaR {
       def run(): Unit = {
         val cols = ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6), c("a", "b", "c"))
-        val schema = Map[String, (Int, String)]("fuck" -> (1, "Numeric"), "this" -> (2, "Numeric"), "shit" -> (3, "Character"))
+        val schema = Map[String, (Int, String)]("x" -> (1, "Numeric"), "y" -> (2, "Numeric"), "z" -> (3, "Character"))
 
         val df = new DataFrame(cols, schema)
         assert(df(2, 2) == 4)
         assert(df(1, 1) == 1)
-        assert(df("fuck") == c(1, 2, 3))
+        assert(df("x") == c(1, 2, 3))
+        assert(df(1) == c(1, 2, 3))
+        assert(df(c("x", "y")) == ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6)))
       }
     }
   }
@@ -188,11 +199,27 @@ class Tests extends FlatSpec {
     object DFUtilitiesTest extends ScalaR {
       def run(): Unit = {
         val cols = ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6), c("a", "b", "c"))
-        val schema = Map[String, (Int, String)]("fuck" -> (1, "Numeric"), "this" -> (2, "Numeric"), "shit" -> (3, "Character"))
+        val schema = Map[String, (Int, String)]("x" -> (1, "Numeric"), "y" -> (2, "Numeric"), "z" -> (3, "Character"))
 
         val df = new DataFrame(cols, schema)
         assert(nrow(df) == 3)
         assert(ncol(df) == 3)
+      }
+    }
+  }
+
+  "DataFrame apply test" should "return the proper elements from a DataFrame object" in {
+    object DFApplyTest extends ScalaR {
+      def run(): Unit = {
+        val cols = ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6), c("a", "b", "c"))
+        val schema = Map[String, (Int, String)]("x" -> (1, "Numeric"), "y" -> (2, "Numeric"), "z" -> (3, "Character"))
+
+        val df = new DataFrame(cols, schema)
+        'df <-- df
+        assert('df(2, 2) == 4)
+        assert('df("x") == c(1, 2, 3))
+        assert('df(1) == c(1, 2, 3))
+        assert('df(c("x", "y")) == ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6)))
       }
     }
   }

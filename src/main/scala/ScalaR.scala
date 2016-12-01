@@ -89,13 +89,34 @@ class ScalaR {
 		// }
 
 		def apply(idx: Int): Any = {
-			val v = variableMappings(s)
-			v(idx).storedValue
+			val result = if (variableMappings.contains(s)) variableMappings(s)(idx).storedValue else dfMappings(s)(idx).storedValue
+			result
 		}
 
 		def apply(r: Range): RVector = {
 			val vec = variableMappings(s)
 			return vec(r.min - 1, r.max)
+		}
+
+		def apply(rowIdx: Int, colIdx: Int): RVector = {
+			val df = dfMappings(s)
+			df(rowIdx, colIdx)
+		}
+
+		def apply(col: String): RVector = {
+			val df = dfMappings(s)
+			df(col)
+		}
+
+		def apply(cols: RVector): ArrayBuffer[RVector] = {
+			val df = dfMappings(s)
+			df(cols)
+		}
+
+		def apply(sym: Symbol): Any = {
+			val df = dfMappings(s)
+			val value = variableMappings(sym)
+			df(value)
 		}
 
 		def <--(value: Any) = {
@@ -214,9 +235,25 @@ class ScalaR {
 		return sd(vec)
 	}
 
-	def sum(s:Symbol) : RVector = {
+	def sum(s: Symbol): RVector = {
 		val vec = variableMappings(s)
 		return sum(vec)
+	}
+
+	def setdiff(s0: Symbol, vec1: RVector): RVector = {
+		val vec0 = variableMappings(s0)
+		setdiff(vec0, vec1)
+	}
+
+	def setdiff(vec0: RVector, s1: Symbol): RVector = {
+		val vec1 = variableMappings(s1)
+		setdiff(vec0, vec1)
+	}
+
+	def setdiff(s0: Symbol, s1: Symbol): RVector = {
+		val vec0 = variableMappings(s0)
+		val vec1 = variableMappings(s1)
+		setdiff(vec0, vec1)
 	}
 
 	def plot(x: RVector, y: RVector, main: String = "", xlab: String = "", ylab: String = "") = {

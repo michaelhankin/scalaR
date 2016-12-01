@@ -7,16 +7,18 @@ import VectorUtils._
 // DataFrame object in which each RVector in the list corresponds to a column
 class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, String)]) {
 	val nCols = cols.length
-	val nRows = cols(0).length
+	val nRows = if (cols.length > 0) cols(0).length else 0
 
-	def apply(row: Int, col: Int): Any = {
-		val cell = null
+	def apply(row: Int, col: Int): RVector = {
+		val cellVec = null
 		if (row <= nRows && col <= nCols) {
-			val cell = cols(col - 1)(row - 1).storedValue
+			val cell = cols(col - 1)(row - 1)
+			val cellType = CsvParser.infer_type(cell.toString)
+			val cellVec = new RVector(ArrayBuffer[Type](cell), cellType)
 		} else {
 			throw new RuntimeException(s"Error: undefined cells selected")
 		}
-		cell
+		cellVec
 	}
 
 	def apply(col: Int): RVector = {
