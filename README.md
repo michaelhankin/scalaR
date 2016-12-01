@@ -1,2 +1,2 @@
-# scalaR
-loose implementation of R as an internal DSL in Scala
+# ScalaR
+An internal DSL built to be a subset of R. 
