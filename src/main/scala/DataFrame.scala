@@ -55,13 +55,18 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		rowVals
 	}
 
-	def apply(colNames: RVector): ArrayBuffer[RVector] = {
+	def apply(colNames: RVector): DataFrame = {
 		val colArr = unpackCharacterVector(colNames)
-		var result = ArrayBuffer[RVector]()
-		for (col <- colArr) {
-			result +:= this.apply(col)
+		var newSchema = Map[String, (Int, String)]()
+		for ((colName, i) <- colArr.zipWithIndex) {
+			val colType = schema(colName)._2
+			newSchema += (colName -> (i + 1, colType))
 		}
-		result
+		var newData = ArrayBuffer[RVector]()
+		for (col <- colArr) {
+			newData +:= this.apply(col)
+		}
+		new DataFrame(newData, newSchema)
 	}
 
 	def getRowZeroIndex(row: Int): ArrayBuffer[Type] = {

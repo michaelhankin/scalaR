@@ -108,7 +108,7 @@ class ScalaR {
 			df(col)
 		}
 
-		def apply(cols: RVector): ArrayBuffer[RVector] = {
+		def apply(cols: RVector): DataFrame = {
 			val df = dfMappings(s)
 			df(cols)
 		}
