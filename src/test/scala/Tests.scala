@@ -289,5 +289,24 @@ class Tests extends FlatSpec {
     PlotTest.run()
   }
 
+    "csv read AUTO" should "not fuck up" in {
+    object CsvParse3 {
+      def run(): Unit = {
+        val stream = new java.io.ByteArrayOutputStream()
+        Console.withErr(stream) {
+        var buff = (ArrayBuffer[RVector](), Map[String, (Int,String)]())
+        setPath("./")
+        buff = CsvParser.read_csv("Auto.csv", true, ",", "?")
+        println(buff)
+        var data = new DataFrame(buff._1, buff._2)
+        data.printdf()
+
+        }
+      }
+    }
+
+    CsvParse3.run()
+  }
+
 
 }

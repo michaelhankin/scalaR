@@ -10,7 +10,7 @@ import com.quantifind.charts.Highcharts._
 // eg 'v = 1
 //    'v == 1 etc 
 
-class ScalaR {
+object ScalaR {
 	def NA = new NAType
 	var variableMappings: Map[Symbol, RVector] = Map[Symbol, RVector]()
 	var dfMappings: Map[Symbol, DataFrame] = Map[Symbol, DataFrame]()
@@ -24,6 +24,10 @@ class ScalaR {
 		def apply(r: Range): RVector = {
 			val vec = variableMappings(s)
 			return vec(r.min - 1, r.max)
+		}
+
+		def apply(): DataFrame = {
+
 		}
 
 		def <--(value: Any) = {
@@ -42,6 +46,7 @@ class ScalaR {
 								    var vec = new RVector(buf, "Character")
 								    variableMappings += (s -> vec)
 				case v: RVector  => variableMappings += (s -> v)	
+				case df: DataFrame => dfMappings += (s -> df)
 			}
 		}
 
@@ -65,7 +70,7 @@ class ScalaR {
 		// 	}
 		// }
 
-		def ==(other: Symbol): Boolean = {
+	def ==(other: Symbol): Boolean = {
 			val a = variableMappings(s)
 			val b = variableMappings(other)
 			return a.getType == b.getType && a.data == b.data
@@ -103,14 +108,20 @@ class ScalaR {
 		}
 	}
 
+	def read_csv(path: String, header: Boolean = true, delim: String = ",", naString: String = ""): DataFrame = {
+		val data = CsvParser.read_data(path, header, delim, naString)
+		var df = new DataFrame(data._1, data._2)
+		return df 
+	}
+
 	def print(s: Symbol) = {
 
 		var foundVec = false
 
 		val vec = variableMappings.get(s)
 		vec match {
-  			case Some(value) => println(value)
-  			case None => foundVec = true
+  			case Some(value) => println(value); foundVec = true
+  			case None => foundVec = false
 		}
 
 		if (!foundVec) {
@@ -130,7 +141,7 @@ class ScalaR {
 	// basic R usage functions 
 	def length(s: Symbol): Int = variableMappings(s).length
 
-	def typeOf(s: Symbol): String = variableMappings(s).getType
+	def typeOf(s: Symbol)  = println(variableMappings(s).getType)
 
 	def mean(s: Symbol): RVector = {
 		val vec = variableMappings(s)
@@ -141,6 +152,8 @@ class ScalaR {
 		val vec = variableMappings(s)
 		return sd(vec)
 	}
+
+	def typeOf(vec: RVector)  = println(vec.getType)
 
 	def plot(x: RVector, y: RVector, main: String = "", xlab: String = "", ylab: String = "") = {
 		scatter((unpackNumericVector(x), unpackNumericVector(y)))
@@ -220,6 +233,19 @@ class ScalaR {
 		}
 		result
 	}
+
+	def head(s: Symbol, count: Int = 5): Unit = {
+		head(dfMappings(s), count + 1)
+	}
+
+	def head(df: DataFrame, count: Int = 5) = {
+		df.head(count + 1)
+	}
+
+
+	// def subset(df: DataFrame, formula: String, select: RVector) = {
+
+	// } 
 
 
 	// def asLogical(vec: RVector): RVector = {

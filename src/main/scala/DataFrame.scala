@@ -70,7 +70,6 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		var columns = new Array[String](nCols)
 
 		for(header <- schema.keys){
-			println(header)
 			var index = schema(header)._1
 			headerWidths(index) = header.length
 			columns(index) = header
@@ -110,6 +109,84 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		}
 
 		println(sb)
+	}
+
+	def head(count: Int = 5) = {
+		var widths = new Array[Int](nCols)
+		var headerWidths = new Array[Int](nCols)
+		var columns = new Array[String](nCols)
+
+		for(header <- schema.keys) {
+			var index = schema(header)._1
+			headerWidths(index) = header.length
+			columns(index) = header
+		}
+
+		columns = columns
+		headerWidths = headerWidths
+
+		for ((col,i) <- cols.zipWithIndex) {
+			val w = col.getColWidth
+			widths(i) = if (w > headerWidths(i)) w else headerWidths(i)
+		}
+
+		// print header 
+		var sb = new StringBuilder()
+		for ((c,j) <- columns.zipWithIndex) {
+			for (i <- 0 until widths(j)-c.length){
+				sb += ' '
+			}
+			sb ++= c
+			sb ++= "  "
+		}
+		sb ++= "\n"
+
+		// print data 
+		for (i <- 1 until count) {
+			val row = this.getRowZeroIndex(i)
+			for ((r,k) <- row.zipWithIndex) {
+			val curCell = r.toString
+				for (j <- 0 until widths(k)-curCell.length) {
+					sb += ' '
+				}
+			sb ++= curCell
+			sb ++= "  "
+			}
+			sb ++= "\n"
+		}
+
+		println(sb)
+	}
+
+	def colnames = {
+		var widths = new Array[Int](nCols)
+		var headerWidths = new Array[Int](nCols)
+		var columns = new Array[String](nCols)
+
+		for(header <- schema.keys){
+			var index = schema(header)._1
+			headerWidths(index) = header.length
+			columns(index) = header
+		}
+
+		columns = columns
+		headerWidths = headerWidths
+
+		for ((col,i) <- cols.zipWithIndex) {
+			val w = col.getColWidth
+			widths(i) = if (w > headerWidths(i)) w else headerWidths(i)
+		}
+
+		// print header 
+		var sb = new StringBuilder()
+		for ((c,j) <- columns.zipWithIndex) {
+			for (i <- 0 until widths(j)-c.length){
+				sb += ' '
+			}
+			sb ++= c
+			sb ++= "  "
+		}
+		sb ++= "\n"
 	}
 
 
