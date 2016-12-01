@@ -25,7 +25,6 @@ object CsvParser {
       }
     }
 
-
     for (i <- 1 until lines.length) {
       val cols = lines(i).split(delim).map(_.trim)
       for(j <- 0 until cols.length){

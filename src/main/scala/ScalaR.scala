@@ -16,86 +16,36 @@ object ScalaR {
 	var dfMappings: Map[Symbol, DataFrame] = Map[Symbol, DataFrame]()
 
 	implicit class VariableWrapper(s: Symbol) {
-		// def +(that: Symbol) : RVector = {
-		// 	val vec = variableMappings(that)
-		// 	val thisVec = variableMappings(s)
-		//
-		// 	var n1: RVector = null
-		// 	if (thisVec.getType == "Numeric") n1 = asNumeric(thisVec)
-		// 	else if (thisVec.getType == "Character" || thisVec.getType == "Logical")
-		// 		throw new IllegalArgumentException("Argument is not Numeric")
-		//
-		// 	var n2: RVector = null
-		// 	if (vec.getType == "Numeric") n2 = asNumeric(vec)
-		// 	else if (vec.getType == "Character" || vec.getType == "Logical")
-		// 	throw new IllegalArgumentException("Argument is not Numeric")
-		//
-		// 	if(n1.data.length != n2.data.length)
-		// 	throw new IllegalArgumentException("Arguments are not of the same length")
-		//
-		// 	var ab = new ArrayBuffer[Type]()
-		//
-		// 	for (i <- 0 until n1.data.length) {
-		// 		if (n1.data(i).storedValue == "NA" || n2.data(i).storedValue == "NA")
-		// 		ab(i) = new NAType()
-		// 		else {
-		// 			var sum:Double = 0
-		// 			n1.data(i).storedValue match {
-		// 				case d: Double => sum += d
-		// 			}
-		// 			n2.data(i).storedValue match {
-		// 				case d: Double => sum += d
-		// 			}
-		// 			ab(i) = new Numeric(sum)
-		// 		}
-		// 	}
-		// 	return new RVector(ab, "Numeric")
-		// }
-		//
-		// def -(that: Symbol) : RVector = {
-		// 	val vec = variableMappings(that)
-		// 	val thisVec = variableMappings(s)
-		//
-		// 	var n1: RVector = null
-		// 	if (thisVec.getType == "Numeric") n1 = asNumeric(thisVec)
-		// 	else if (thisVec.getType == "Character" || thisVec.getType == "Logical")
-		// 		throw new IllegalArgumentException("Argument is not Numeric")
-		//
-		// 	var n2: RVector = null
-		// 	if (vec.getType == "Numeric") n2 = asNumeric(vec)
-		// 	else if (vec.getType == "Character" || vec.getType == "Logical")
-		// 	throw new IllegalArgumentException("Argument is not Numeric")
-		//
-		// 	if(n1.data.length != n2.data.length)
-		// 	throw new IllegalArgumentException("Arguments are not of the same length")
-		//
-		// 	var ab = new ArrayBuffer[Type]()
-		//
-		// 	for (i <- 0 until n1.data.length) {
-		// 		if (n1.data(i).storedValue == "NA" || n2.data(i).storedValue == "NA")
-		// 		ab(i) = new NAType()
-		// 		else {
-		// 			var diff:Double = 0
-		// 			n1.data(i).storedValue match {
-		// 				case d: Double => diff = d
-		// 			}
-		// 			n2.data(i).storedValue match {
-		// 				case d: Double => diff -= d
-		// 			}
-		// 			ab(i) = new Numeric(diff)
-		// 		}
-		// 	}
-		// 	return new RVector(ab, "Numeric")
-		// }
 
 		def apply(idx: Int): Any = {
-			val v = variableMappings(s)
-			v(idx).storedValue
+			val result = if (variableMappings.contains(s)) variableMappings(s)(idx).storedValue else dfMappings(s)(idx).storedValue
+			result
 		}
 
 		def apply(r: Range): RVector = {
 			val vec = variableMappings(s)
 			return vec(r.min - 1, r.max)
+		}
+
+		def apply(rowIdx: Int, colIdx: Int): RVector = {
+			val df = dfMappings(s)
+			df(rowIdx, colIdx)
+		}
+
+		def apply(col: String): RVector = {
+			val df = dfMappings(s)
+			df(col)
+		}
+
+		def apply(cols: RVector): ArrayBuffer[RVector] = {
+			val df = dfMappings(s)
+			df(cols)
+		}
+
+		def apply(sym: Symbol): Any = {
+			val df = dfMappings(s)
+			val value = variableMappings(sym)
+			df(value)
 		}
 
 		def <--(value: Any) = {
@@ -127,21 +77,18 @@ object ScalaR {
 			}
 		}
 
-		// def ==(value: Type) = {
-		// 	if (variableMappings.contains(s) && variableMappings(s).getType == value.getType) {
-		// 		value.storedValue == variableMappings(s).storedValue
-		// 	} else if (!variableMappings.contains(s)) {
-		// 		val name = s.name
-		// 		throw new RuntimeException(s"Error: object '$name' not found")
-		// 	} else {
-		// 		throw new RuntimeException("Error: input objects must have same type")
-		// 	}
-		// }
+		def +(that: Symbol): RVector = {
+			return variableMappings(s) + variableMappings(that) 
+		}	
 
-	def ==(other: Symbol): Boolean = {
-			val a = variableMappings(s)
-			val b = variableMappings(other)
-			return a.getType == b.getType && a.data == b.data
+		def -(that: Symbol): RVector = {
+			return variableMappings(s) + variableMappings(that) 
+		}
+
+		def ==(other: Symbol): Boolean = {
+				val a = variableMappings(s)
+				val b = variableMappings(other)
+				return a.getType == b.getType && a.data == b.data
 		}
 	}
 
@@ -221,10 +168,9 @@ object ScalaR {
 		return sd(vec)
 	}
 
-
 	def typeOf(vec: RVector)  = println(vec.getType)
 
-	def sum(s:Symbol) : RVector = {
+	def sum(s: Symbol): RVector = {
 		val vec = variableMappings(s)
 		return sum(vec)
 	}
@@ -234,6 +180,22 @@ object ScalaR {
 		title(main)
 		xAxis(xlab)
 		yAxis(ylab)
+	}
+
+	def setdiff(s0: Symbol, vec1: RVector): RVector = {
+		val vec0 = variableMappings(s0)
+		setdiff(vec0, vec1)
+	}
+
+	def setdiff(vec0: RVector, s1: Symbol): RVector = {
+		val vec1 = variableMappings(s1)
+		setdiff(vec0, vec1)
+	}
+
+	def setdiff(s0: Symbol, s1: Symbol): RVector = {
+		val vec0 = variableMappings(s0)
+		val vec1 = variableMappings(s1)
+		setdiff(vec0, vec1)
 	}
 
 	def plot(x: RVector, y: RVector, main: String = "", xlab: String = "", ylab: String = "") = {
@@ -318,33 +280,6 @@ object ScalaR {
 		return new RVector(ArrayBuffer[Type](new Numeric(sum)), "Numeric")
 	}
 
-
-	// def -(vec: RVector): RVector = {
-	// 	var n1: RVector = null
-	// 	if (v1.getType == "Numeric") n1 = asNumeric(v1)
-	// 	else if (v1.getType == "Character" || v1.getType == "Logical")
-	// 		throw new IllegalArgumentException("Argument is not Numeric")
-	//
-	// 	var n2: RVector = null
-	// 	if (v2.getType == "Numeric") n2 = asNumeric(v2)
-	// 	else if (v2.getType == "Character" || v2.getType == "Logical")
-	// 		throw new IllegalArgumentException("Argument is not Numeric")
-	//
-	// 	val len = number.min(n1.data.length, n2.data.length)
-	// 	var rv = new RVector(ArrayBuffer[Type](new Numeric(sum)), "Numeric")
-	//
-	// 	var sum = 0.0
-	// 	for (v <- numvec.data) {
-	// 		if (v.storedValue == "NA")
-	// 		return new RVector(ArrayBuffer[Type](new NAType), "Logical")
-	// 		else
-	// 		v.storedValue match {
-	// 			case d: Double => sum += d
-	// 		}
-	// 	}
-	// 	return new RVector(ArrayBuffer[Type](new Numeric(sum)), "Numeric")
-	// }
-
 	def asLogical(vec: RVector): RVector = {
 		var buf = ArrayBuffer[Type]() ++ vec.data.map(toLogical)
 		return new RVector(buf, "Logical")
@@ -400,7 +335,6 @@ object ScalaR {
 		val subset_col = df(col).data.zipWithIndex
 		
 		for ((v,i) <- subset_col) {
-			println(s"v: $v i: $i")
 			operator match {
 				case ">" => {
 					val v2 = v.storedValue match {
@@ -446,44 +380,25 @@ object ScalaR {
 		}
 
 		var bigBuf = ArrayBuffer[ArrayBuffer[Type]]()
-
-		println(colIndexes)
+		for (_ <- 0 until colIndexes.length) {
+			bigBuf += new ArrayBuffer[Type]()
+		}
 
 		for (i <- rows) {
-			val row = df.getRowZeroIndex(i)
-			println(row)
+			val row = df.getRow(i)
 			for ((j,k) <- colIndexes.zipWithIndex) {
 				bigBuf(k) += row(j)
 			}
 		}
 
-		println(bigBuf)
-
-		    var retBuf = ArrayBuffer[RVector]()
-		    var j = 0
-		    for(buff <- bigBuf) {
-		      var vec = new RVector(buff, "Numeric")
-		      retBuf += vec
-		      j = j + 1
-    		}
+	    var retBuf = ArrayBuffer[RVector]()
+	    var j = 0
+	    for(buff <- bigBuf) {
+	      var vec = new RVector(buff, "Numeric")
+	      retBuf += vec
+	      j = j + 1
+		}
 
 		return new DataFrame(retBuf, schema_map)
 	} 
-
-
-	// def asLogical(vec: RVector): RVector = {
-	// 	var buf = ArrayBuffer[Type]() ++ vec.data.map(toLogical)
-	// 	return new RVector(buf, "Logical")
-	// }
-
-	// def asNumeric(vec: RVector): RVector = {
-	// 	var buf = ArrayBuffer[Type]() ++ vec.data.map(toNumeric)
-	// 	return new RVector(buf, "Numeric")
-	// }
-	// def asCharacter(vec: RVector): RVector = {
-	// 	var buf = ArrayBuffer[Type]() ++ vec.data.map(toCharacter)
-	// 	return new RVector(buf, "Character")
-	// }
-
-	def getVariableMappings = variableMappings
 }
