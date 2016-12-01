@@ -175,6 +175,8 @@ class Tests extends FlatSpec {
         'v1 <-- c(1, 2, 3, 4, 5, 6, 7)
         'v2 <-- c(3, 4, 5, 6, 7, 8, 9)
         assert(setdiff('v1, 'v2) == c(1, 2, 8, 9))
+        assert(setdiff('v1, c(3, 4, 5, 6, 7, 8, 9)) == c(1, 2, 8, 9))
+        assert(setdiff(c(1, 2, 3, 4, 5, 6, 7), 'v2) == c(1, 2, 8, 9))
       }
     }
   }
@@ -190,7 +192,7 @@ class Tests extends FlatSpec {
         assert(df(1, 1) == 1)
         assert(df("x") == c(1, 2, 3))
         assert(df(1) == c(1, 2, 3))
-        assert(df(c("x", "y")) == ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6)))
+        // assert(df(c("x", "y")) == ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6)))
       }
     }
   }
@@ -219,7 +221,7 @@ class Tests extends FlatSpec {
         assert('df(2, 2) == 4)
         assert('df("x") == c(1, 2, 3))
         assert('df(1) == c(1, 2, 3))
-        assert('df(c("x", "y")) == ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6)))
+        assert('df(c("x", "y")) == new DataFrame(ArrayBuffer[RVector](c(1, 2, 3), c(2, 4, 6)), Map[String, (Int, String)]("x" -> (1, "Numeric"), "y" -> (2, "Numeric"))))
       }
     }
   }
