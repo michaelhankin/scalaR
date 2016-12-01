@@ -7,7 +7,7 @@ import VectorUtils._
 // DataFrame object in which each RVector in the list corresponds to a column
 class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, String)]) {
 	val nCols = cols.length
-	val nRows = cols(0).length
+	// val nRows = cols(0).length
 
 	def apply(row: Int, col: Int): Any = {
 		val cell = null
@@ -198,11 +198,6 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		}
 		sb ++= "\n"
 	}
-
-
-	// def apply(colNames: RVector): ArrayBuffer[RVector] = {
-
-	// }
 }
 
 object DataFrameUtils {

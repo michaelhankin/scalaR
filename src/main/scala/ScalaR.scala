@@ -1,5 +1,5 @@
 package scalar
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable._
 import TypeUtils._
 import DataFrameUtils._
 import VectorUtils._
@@ -96,10 +96,6 @@ object ScalaR {
 		def apply(r: Range): RVector = {
 			val vec = variableMappings(s)
 			return vec(r.min - 1, r.max)
-		}
-
-		def apply(): DataFrame = {
-
 		}
 
 		def <--(value: Any) = {
@@ -225,17 +221,30 @@ object ScalaR {
 		return sd(vec)
 	}
 
-<<<<<<< HEAD
+
 	def typeOf(vec: RVector)  = println(vec.getType)
-=======
+
 	def sum(s:Symbol) : RVector = {
 		val vec = variableMappings(s)
 		return sum(vec)
 	}
->>>>>>> 6efd419f9353838ef58c6b58c69d9c45025aaea9
+
+	def plotlm(x: RVector, y: RVector, main: String = "", xlab: String = "", ylab: String = "") = {
+		regression((unpackNumericVector(x), unpackNumericVector(y)))
+		title(main)
+		xAxis(xlab)
+		yAxis(ylab)
+	}
 
 	def plot(x: RVector, y: RVector, main: String = "", xlab: String = "", ylab: String = "") = {
 		scatter((unpackNumericVector(x), unpackNumericVector(y)))
+		title(main)
+		xAxis(xlab)
+		yAxis(ylab)
+	}
+
+	def hist(x: RVector, bins: Int, main: String = "", xlab: String = "", ylab: String = "") = {
+		histogram(unpackNumericVector(x), bins)
 		title(main)
 		xAxis(xlab)
 		yAxis(ylab)
@@ -360,8 +369,8 @@ object ScalaR {
 		result
 	}
 
-	def head(s: Symbol, count: Int = 5): Unit = {
-		head(dfMappings(s), count + 1)
+	def head(s: Symbol): Unit = {
+		head(dfMappings(s), 5)
 	}
 
 	def head(df: DataFrame, count: Int = 5) = {
@@ -369,9 +378,97 @@ object ScalaR {
 	}
 
 
-	// def subset(df: DataFrame, formula: String, select: RVector) = {
+	def subset(df: DataFrame, formula: String, select: String = ""): DataFrame = {
+		var columns = select.split(" ").map(_.trim)
+		var colIndexes = new ArrayBuffer[Int]()
+		var schema_map = Map[String, (Int, String)]()
+		var p = 0
+		for((k,v) <- df.schema) {
+			if (columns.contains(k) || select.equals("")) {
+				schema_map(k) = (p, v._2)
+				colIndexes += df.schema(k)._1
+				p = p + 1
+			}
+		}
 
-	// } 
+		var args = formula.split(" ").map(_.trim)
+		var col = args(0)
+		var operator = args(1)
+		var num = args(2)
+		var rows = new ArrayBuffer[Int]()
+
+		val subset_col = df(col).data.zipWithIndex
+		
+		for ((v,i) <- subset_col) {
+			println(s"v: $v i: $i")
+			operator match {
+				case ">" => {
+					val v2 = v.storedValue match {
+						case d: Double => d
+					}
+
+					if (v2 > num.toDouble)
+						rows += i
+				}
+				case "<" => {
+					val v2 = v.storedValue match {
+						case d: Double => d
+					}
+
+					if (v2 < num.toDouble)
+						rows += i
+				}
+				case "<=" => {
+					val v2 = v.storedValue match {
+						case d: Double => d
+					}
+
+					if (v2 <= num.toDouble)
+						rows += i
+				}
+				case ">=" => {
+					val v2 = v.storedValue match {
+						case d: Double => d
+					}
+
+					if (v2 >= num.toDouble)
+						rows += i
+				}
+				case "==" => {
+					val v2 = v.storedValue match {
+						case d: Double => d
+					}
+
+					if (v2 == num.toDouble)
+						rows += i
+				}
+			}
+		}
+
+		var bigBuf = ArrayBuffer[ArrayBuffer[Type]]()
+
+		println(colIndexes)
+
+		for (i <- rows) {
+			val row = df.getRowZeroIndex(i)
+			println(row)
+			for ((j,k) <- colIndexes.zipWithIndex) {
+				bigBuf(k) += row(j)
+			}
+		}
+
+		println(bigBuf)
+
+		    var retBuf = ArrayBuffer[RVector]()
+		    var j = 0
+		    for(buff <- bigBuf) {
+		      var vec = new RVector(buff, "Numeric")
+		      retBuf += vec
+		      j = j + 1
+    		}
+
+		return new DataFrame(retBuf, schema_map)
+	} 
 
 
 	// def asLogical(vec: RVector): RVector = {
