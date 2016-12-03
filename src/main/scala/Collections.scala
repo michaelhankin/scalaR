@@ -71,6 +71,14 @@ class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 		return new RVector(ab, "Numeric")
 	}
 
+	def +(that: Symbol) : RVector ={
+		return this + ScalaR.variableMappings(that)
+	}
+
+	def -(that: Symbol) : RVector ={
+		return this - ScalaR.variableMappings(that)
+	}
+
 	def -(that: RVector) : RVector = {
 		if (this.getType == "Character" || this.getType == "Logical")
 			throw new IllegalArgumentException("Argument is not Numeric")
