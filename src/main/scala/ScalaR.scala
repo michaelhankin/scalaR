@@ -63,7 +63,7 @@ object ScalaR {
 				case str: String => buf += new Character(str)
 								    var vec = new RVector(buf, "Character")
 									variableMappings += (s -> vec)
-				case v: RVector  => variableMappings += (s -> v)	
+				case v: RVector  => variableMappings += (s -> v)
 				case df: DataFrame => dfMappings += (s -> df)
 			}
 		}
@@ -78,11 +78,11 @@ object ScalaR {
 		}
 
 		def +(that: Symbol): RVector = {
-			return variableMappings(s) + variableMappings(that) 
-		}	
+			return variableMappings(s) + variableMappings(that)
+		}
 
 		def -(that: Symbol): RVector = {
-			return variableMappings(s) + variableMappings(that) 
+			return variableMappings(s) - variableMappings(that)
 		}
 
 		def ==(other: Symbol): Boolean = {
@@ -126,7 +126,7 @@ object ScalaR {
 	def read_csv(path: String, header: Boolean = true, delim: String = ",", naString: String = ""): DataFrame = {
 		val data = CsvParser.read_data(path, header, delim, naString)
 		var df = new DataFrame(data._1, data._2)
-		return df 
+		return df
 	}
 
 	def print(s: Symbol) = {
@@ -147,11 +147,6 @@ object ScalaR {
 			}
 		}
 	}
-
-	// Construct a DataFrame object from a sequence of vectors
-	// def data_frame(values: Any*): DataFrame = {
-
-	// }
 
 	// basic R usage functions
 	def length(s: Symbol): Int = variableMappings(s).length
@@ -333,7 +328,7 @@ object ScalaR {
 		var rows = new ArrayBuffer[Int]()
 
 		val subset_col = df(col).data.zipWithIndex
-		
+
 		for ((v,i) <- subset_col) {
 			operator match {
 				case ">" => {
@@ -400,5 +395,5 @@ object ScalaR {
 		}
 
 		return new DataFrame(retBuf, schema_map)
-	} 
+	}
 }
