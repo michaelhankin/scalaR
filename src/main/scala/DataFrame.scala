@@ -5,32 +5,30 @@ import scala.collection.mutable._
 import VectorUtils._
 
 // DataFrame object in which each RVector in the list corresponds to a column
-class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, String)]) {
+class DataFrame(var cols: ArrayBuffer[RVector], var schema: LinkedHashMap[String, (Int, String)]) {
 	val nCols = cols.length
 	val nRows = if (cols.length > 0) cols(0).length else 0
 
 	def apply(row: Int, col: Int): RVector = {
-		val cellVec = null
 		if (row <= nRows && col <= nCols) {
-			val cell = cols(col - 1)(row - 1)
+			val cell = cols(col - 1)(row).data(row-1)
 			val cellType = CsvParser.infer_type(cell.toString)
-			val cellVec = new RVector(ArrayBuffer[Type](cell), cellType)
+			return new RVector(ArrayBuffer[Type](cell), cellType)
 		} else {
 			throw new RuntimeException(s"Error: undefined cells selected")
 		}
-		cellVec
+		return new RVector(ArrayBuffer[Type](), "Logical")
 	}
 
 	def apply(col: Int): RVector = {
-		val colVec = null
 		if (col == 0) {
 			println(s"data frame with 0 columns and $nRows rows")
 		} else if (col <= nCols) {
-			val colVec = cols(col - 1)
+			return this.cols(col - 1)
 		} else {
 			throw new RuntimeException(s"Error: undefined columns selected")
 		}
-		colVec
+		return new RVector(ArrayBuffer[Type](), "Logical")
 	}
 
 	def apply(col: String): RVector = {
@@ -47,7 +45,7 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		var rowVals = ArrayBuffer[Type]()
 		if (row <= nRows) {
 			for (col <- cols) {
-				rowVals += col(row - 1)
+				rowVals += col(row).data(0)
 			}
 		} else {
 			throw new RuntimeException(s"Error: row index is out of bounds")
@@ -57,7 +55,7 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 
 	def apply(colNames: RVector): DataFrame = {
 		val colArr = unpackCharacterVector(colNames)
-		var newSchema = Map[String, (Int, String)]()
+		var newSchema = LinkedHashMap[String, (Int, String)]()
 		for ((colName, i) <- colArr.zipWithIndex) {
 			val colType = schema(colName)._2
 			newSchema += (colName -> (i + 1, colType))
@@ -73,7 +71,7 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 		var rowVals = ArrayBuffer[Type]()
 		if (row <= nRows) {
 			for (col <- cols) {
-				rowVals += col(row)
+				rowVals += col(row-1).data(0)
 			}
 		} else {
 			throw new RuntimeException(s"Error: row index is out of bounds")
@@ -113,7 +111,7 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 
 		// print data
 		for (i <- 1 until nRows+1) {
-			val row = this.getRowZeroIndex(i)
+			val row = this.getRow(i)
 			for ((r,k) <- row.zipWithIndex) {
 			val curCell = r.toString
 				for (j <- 0 until widths(k)-curCell.length) {
@@ -160,7 +158,7 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 
 		// print data 
 		for (i <- 1 until count) {
-			val row = this.getRowZeroIndex(i)
+			val row = this.getRow(i)
 			for ((r,k) <- row.zipWithIndex) {
 			val curCell = r.toString
 				for (j <- 0 until widths(k)-curCell.length) {

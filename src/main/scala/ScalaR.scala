@@ -17,8 +17,9 @@ object ScalaR {
 
 	implicit class VariableWrapper(s: Symbol) {
 
-		def apply(idx: Int): Any = {
-			val result = if (variableMappings.contains(s)) variableMappings(s)(idx).storedValue else dfMappings(s)(idx).storedValue
+		def apply(idx: Int): RVector = {
+			val result = if (variableMappings.contains(s)) variableMappings(s)(idx)
+						 else dfMappings(s)(idx)
 			result
 		}
 
@@ -30,7 +31,7 @@ object ScalaR {
 		def apply(rowIdx: Int, colIdx: Int): RVector = {
 			val df = dfMappings(s)
 			df(rowIdx, colIdx)
-		}
+		}	
 
 		def apply(col: String): RVector = {
 			val df = dfMappings(s)
@@ -63,6 +64,9 @@ object ScalaR {
 				case str: String => buf += new Character(str)
 								    var vec = new RVector(buf, "Character")
 									variableMappings += (s -> vec)
+				case na: NAType => buf += new NAType
+								   var vec = new RVector(buf, "Logical")
+								   variableMappings += (s -> vec)
 				case v: RVector  => variableMappings += (s -> v)	
 				case df: DataFrame => dfMappings += (s -> df)
 			}
@@ -142,11 +146,15 @@ object ScalaR {
 		if (!foundVec) {
 			val df = dfMappings.get(s)
 			df match {
-				case Some(value) => value .printdf()
+				case Some(value) => value.printdf()
 				case None => throw new Exception(s"object '${s}' not found")
 			}
 		}
 	}
+
+	def print(vec: RVector): Unit = println(vec)
+
+	def print(df: DataFrame): Unit = df.printdf()
 
 	// Construct a DataFrame object from a sequence of vectors
 	// def data_frame(values: Any*): DataFrame = {
@@ -154,9 +162,9 @@ object ScalaR {
 	// }
 
 	// basic R usage functions
-	def length(s: Symbol): Int = variableMappings(s).length
+	def length(s: Symbol): RVector = length(variableMappings(s))
 
-	def typeOf(s: Symbol)  = println(variableMappings(s).getType)
+	def typeOf(s: Symbol) = println(variableMappings(s).getType)
 
 	def mean(s: Symbol): RVector = {
 		val vec = variableMappings(s)
@@ -212,7 +220,7 @@ object ScalaR {
 		yAxis(ylab)
 	}
 
-	def length(vec: RVector): Int = vec.length
+	def length(vec: RVector): RVector = new RVector(ArrayBuffer[Type]() += new Numeric(vec.length), "Numeric")
 
 	def mean(vec: RVector): RVector = {
 		var numvec: RVector = null
@@ -243,7 +251,7 @@ object ScalaR {
 		else if (vec.getType == "Character")
 		throw new IllegalArgumentException("Argument is not Numeric")
 
-		val xbar: Double = mean(numvec)(1).storedValue match {
+		val xbar: Double = mean(numvec)(1).data(0).storedValue match {
 			case d: Double => d
 		}
 
@@ -312,11 +320,14 @@ object ScalaR {
 		df.head(count + 1)
 	}
 
+	def subset(s: Symbol, formula: String, select: String = ""): DataFrame = {
+		subset(dfMappings(s), formula, select)
+	}
 
-	def subset(df: DataFrame, formula: String, select: String = ""): DataFrame = {
+	def subset(df: DataFrame, formula: String, select: String): DataFrame = {
 		var columns = select.split(" ").map(_.trim)
 		var colIndexes = new ArrayBuffer[Int]()
-		var schema_map = Map[String, (Int, String)]()
+		var schema_map = LinkedHashMap[String, (Int, String)]()
 		var p = 0
 		for((k,v) <- df.schema) {
 			if (columns.contains(k) || select.equals("")) {
@@ -341,16 +352,18 @@ object ScalaR {
 						case d: Double => d
 					}
 
-					if (v2 > num.toDouble)
+					if (v2 > num.toDouble){
 						rows += i
+					}
 				}
 				case "<" => {
 					val v2 = v.storedValue match {
 						case d: Double => d
 					}
 
-					if (v2 < num.toDouble)
+					if (v2 < num.toDouble) {
 						rows += i
+					}
 				}
 				case "<=" => {
 					val v2 = v.storedValue match {
@@ -385,7 +398,7 @@ object ScalaR {
 		}
 
 		for (i <- rows) {
-			val row = df.getRow(i)
+			val row = df.getRow(i+1)
 			for ((j,k) <- colIndexes.zipWithIndex) {
 				bigBuf(k) += row(j)
 			}

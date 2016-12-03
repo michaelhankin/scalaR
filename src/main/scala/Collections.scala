@@ -7,8 +7,8 @@ import scala.reflect.ClassTag
 import TypeUtils._
 
 class RVector(var data: ArrayBuffer[Type], var vtype: String) {
-	def apply(idx: Int): Type = {
-		return data(idx - 1)
+	def apply(idx: Int): RVector = {
+		return new RVector(ArrayBuffer[Type]() += data(idx - 1), this.getType)
 	}
 
 	// return slice
@@ -36,6 +36,7 @@ class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 	override def toString: String = {
 		var str = "[1]"
 		for (v <- this.data) {
+
 			str += s" ${v.toString}"
 		}
 		return str
@@ -98,10 +99,6 @@ class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 		}
 		return new RVector(ab, "Numeric")
 	}
-}
-
-class RList(value: Type*) {
-
 }
 
 // Utilities for the user to work with RVector
