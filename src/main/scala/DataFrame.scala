@@ -9,6 +9,17 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: Map[String, (Int, St
 	val nCols = cols.length
 	val nRows = if (cols.length > 0) cols(0).length else 0
 
+	def printData = {
+		for (col <- cols) {
+			col.getType match {
+				case "Logical" => println(unpackLogicalVector(col))
+				case "Numeric" => println(unpackNumericVector(col))
+				case "Character" => println(unpackCharacterVector(col))
+				case _ => println("")
+			}
+		}
+	}
+
 	def apply(row: Int, col: Int): RVector = {
 		val cellVec = null
 		if (row <= nRows && col <= nCols) {

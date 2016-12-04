@@ -5,7 +5,6 @@ import DataFrameUtils._
 import VectorUtils._
 import com.quantifind.charts.Highcharts._
 
-
 // TODO: Make implicit Int / Double / Boolean / String to RVector
 // eg 'v = 1
 //    'v == 1 etc
@@ -86,9 +85,9 @@ object ScalaR {
 		}
 
 		def ==(other: Symbol): Boolean = {
-				val a = variableMappings(s)
-				val b = variableMappings(other)
-				return a.getType == b.getType && a.data == b.data
+			val a = variableMappings(s)
+			val b = variableMappings(other)
+			return a.getType == b.getType && a.data == b.data
 		}
 	}
 
@@ -123,10 +122,89 @@ object ScalaR {
 		}
 	}
 
+	def data_frame(cols: RVector*): DataFrame = {
+		val data = cols.to[ArrayBuffer]
+		var schema = Map[String, (Int, String)]()
+		for ((col, i) <- data.zipWithIndex) {
+			schema += (s"v${i + 1}" -> (i + 1, col.getType))
+		}
+		new DataFrame(data, schema)
+	}
+
+	def data_frame_from_vars(cols: Symbol*): DataFrame = {
+		val data = cols.map(variableMappings(_))
+		data_frame(data: _*)
+	}
+
+	// // Create DataFrame from list of vectors, with default column names set
+	// def data_frame(cols: Any*): DataFrame = {
+	// 	val colClass = cols(0).getClass.toString
+	// 	// println(colClass)
+	// 	val data = ArrayBuffer[RVector]()
+	// 	if (colClass == "class scalar.RVector") {
+	// 		val data = cols.map(_.asInstanceOf[RVector]).to[ArrayBuffer]
+	// 	} else {
+	// 		val data = cols.map(_.asInstanceOf[Symbol]).map(variableMappings(_)).to[ArrayBuffer]
+	// 	}
+	// 	var schema = Map[String, (Int, String)]()
+	// 	for ((col, i) <- data.zipWithIndex) {
+	// 		schema += (s"v${i + 1}" -> (i + 1, col.getType))
+	// 	}
+
+	// 	new DataFrame(data, schema)
+	// }
+
+	// def data_frame_with_schema(schema: Any, cols: Any*): DataFrame = {
+	// 	val schemaClass = schema.getClass.toString
+	// 	val colClass = cols(0).getClass.toString
+	// 	if (schemaClass == "class scalar.RVector") {
+	// 		if (colClass == "class scalar.RVector") {
+	// 			data_frame_with_schema_from_vecs(schema.asInstanceOf[RVector], cols.map(_.asInstanceOf[RVector]): _*)
+	// 		} else {
+	// 			data_frame_with_schema_from_vecsyms(schema.asInstanceOf[RVector], cols.map(_.asInstanceOf[Symbol]): _*)
+	// 		}
+	// 	} else {
+	// 		if (colClass == "class scalar.RVector") {
+	// 			data_frame_with_schema_from_symvecs(schema.asInstanceOf[Symbol], cols.map(_.asInstanceOf[RVector]): _*)
+	// 		} else {
+	// 			data_frame_with_schema_from_syms(schema.asInstanceOf[Symbol], cols.map(_.asInstanceOf[Symbol]): _*)
+	// 		}
+	// 	}
+	// }
+
+	// def data_frame_with_schema_from_vecs(schemaVec: RVector, cols: RVector*): DataFrame = {
+	// 	if (schemaVec.getType != "Character") 
+	// 		throw new RuntimeException("Error: schema vector must contain only character strings")
+	// 	val data = ArrayBuffer[RVector](cols: _*)
+	// 	val schemaArr = unpackCharacterVector(schemaVec)
+	// 	if (schemaArr.length != data.length)
+	// 		throw new RuntimeException("Error: schema vector must have length equal to the number of input column vectors")
+	// 	var schema = Map[String, (Int, String)]()
+	// 	for ((colName, (colVec, i)) <- schemaArr zip data.zipWithIndex) {
+	// 		schema += (colName -> (i + 1, colVec.getType))
+	// 	}
+	// 	new DataFrame(data, schema)
+	// }
+
+	// def data_frame_with_schema_from_symvecs(schemaSym: Symbol, cols: RVector*): DataFrame = {
+	// 	val unwrappedSv = variableMappings(schemaSym)
+	// 	data_frame_with_schema(unwrappedSv, cols: _*)
+	// }
+
+	// def data_frame_with_schema_from_vecsyms(schemaVec: RVector, cols: Symbol*): DataFrame = {
+	// 	val colArr = cols.map(variableMappings(_))
+	// 	data_frame_with_schema(schemaVec, colArr: _*)
+	// }
+
+	// def data_frame_with_schema_from_syms(schemaSym: Symbol, cols: Symbol*): DataFrame = {
+	// 	val colArr = cols.map(variableMappings(_))
+	// 	val schema = variableMappings(schemaSym)
+	// 	data_frame_with_schema(schema, colArr: _*)
+	// }
+
 	def read_csv(path: String, header: Boolean = true, delim: String = ",", naString: String = ""): DataFrame = {
 		val data = CsvParser.read_data(path, header, delim, naString)
-		var df = new DataFrame(data._1, data._2)
-		return df 
+		new DataFrame(data._1, data._2)
 	}
 
 	def print(s: Symbol) = {
@@ -147,11 +225,6 @@ object ScalaR {
 			}
 		}
 	}
-
-	// Construct a DataFrame object from a sequence of vectors
-	// def data_frame(values: Any*): DataFrame = {
-
-	// }
 
 	// basic R usage functions
 	def length(s: Symbol): Int = variableMappings(s).length
