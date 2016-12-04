@@ -6,7 +6,7 @@ object CsvParser {
   var path: String = _
 
   def read_data(path: String, headers: Boolean, delim: String, naString: String = ""): 
-  (ArrayBuffer[RVector], Map[String, (Int,String)]) = {
+  (ArrayBuffer[RVector], LinkedHashMap[String, (Int,String)]) = {
       val bufferedSource = io.Source.fromFile(path)
       var lines = bufferedSource.getLines.toList
       val headers = lines(0).split(delim).map(_.trim)
@@ -52,7 +52,7 @@ object CsvParser {
       j = j + 1
     }
 
-    var schema_map = Map[String, (Int, String)]()
+    var schema_map = LinkedHashMap[String, (Int, String)]()
     var p = 0
     for(row <- headers){
       schema_map(row) = (p, typeBuf(p))
