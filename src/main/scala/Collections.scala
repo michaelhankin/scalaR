@@ -5,15 +5,72 @@ import scala.collection.mutable.ArrayBuffer
 import scala.annotation.unchecked.uncheckedVariance
 import scala.reflect.ClassTag
 import TypeUtils._
+import ScalaR._
 
 class RVector(var data: ArrayBuffer[Type], var vtype: String) {
+	// elite level hacking with appendex
+	var appendex = -1
+
 	def apply(idx: Int): RVector = {
-		return new RVector(ArrayBuffer[Type]() += data(idx - 1), this.getType)
+		if (idx > this.length) {
+			var temp = idx - length 
+			while (temp > 0) {
+				this.data += new NAType
+				temp -= 1
+			}
+			this.appendex = idx
+			return this
+		} else {
+			val vec = new RVector(ArrayBuffer[Type]() += data(idx - 1), this.getType)
+			this.appendex = idx
+			return vec
+		}
 	}
 
 	// return slice
 	def apply(idxMin: Int, idxMax: Int): RVector = {
 		return new RVector(data.slice(idxMin, idxMax), vtype)
+	}
+
+	def <--(value: Any): RVector = {
+		value match {
+			case n: NAType  => this.data(appendex - 1) = n
+			case b: Boolean => {
+				this.getType match {
+					case "Logical" => this.data(appendex - 1) = new Logical(b)
+					case "Numeric" => this.data(appendex - 1) = toNumeric(b)
+					case "Character" => this.data(appendex - 1) = toCharacter(b)
+				}
+			}
+			case i: Int     => {
+				this.getType match {
+					case "Logical" => {
+						this.data.map(toNumeric)
+						this.vtype = "Numeric"
+						this.data(appendex - 1) = new Numeric(i)
+					}
+					case "Numeric" => this.data(appendex - 1) = new Numeric(i)
+					case "Character" =>  this.data(appendex - 1) = new Character(i.toString)
+				}
+			}
+			case d: Double  => {
+				this.getType match {
+					case "Logical" => {
+						this.data.map(toNumeric)
+						this.vtype = "Numeric"
+						this.data(appendex - 1) = new Numeric(d)
+					}
+					case "Numeric" => this.data(appendex - 1) = new Numeric(d)
+					case "Character" =>  this.data(appendex - 1) = new Character(d.toString)
+				}
+			}
+			case s: String  => {
+				this.data.map(toCharacter)
+				this.vtype = "Character"
+				this.data(appendex - 1) = new Character(s)
+			}
+		}
+		return this
 	}
 
 	def getType: String = vtype
@@ -36,8 +93,11 @@ class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 	override def toString: String = {
 		var str = "[1]"
 		for (v <- this.data) {
-
-			str += s" ${v.toString}"
+			if (this.getType == "Character") {
+				str += s""" "${v}""""
+			} else {
+				str += s" ${v.toString}"	
+			}
 		}
 		return str
 	}
@@ -71,11 +131,11 @@ class RVector(var data: ArrayBuffer[Type], var vtype: String) {
 		return new RVector(ab, "Numeric")
 	}
 
-	def +(that: Symbol) : RVector ={
+	def +(that: Symbol) : RVector = {
 		return this + ScalaR.variableMappings(that)
 	}
 
-	def -(that: Symbol) : RVector ={
+	def -(that: Symbol) : RVector = {
 		return this - ScalaR.variableMappings(that)
 	}
 

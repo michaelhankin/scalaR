@@ -55,32 +55,41 @@ object ScalaR {
 		def <--(value: Any) = {
 			val buf = ArrayBuffer[Type]()
 			value match {
-				case b: Boolean  => buf += new Logical(b)
-				var vec = new RVector(buf, "Logical")
-				variableMappings += (s -> vec)
-				case i: Int      => buf += new Numeric(i)
-				var vec = new RVector(buf, "Numeric")
-				variableMappings += (s -> vec)
-				case d: Double   => buf += new Numeric(d)
-				var vec = new RVector(buf, "Numeric")
-				variableMappings += (s -> vec)
-				case str: String => buf += new Character(str)
-								    var vec = new RVector(buf, "Character")
-									variableMappings += (s -> vec)
-				case na: NAType => buf += new NAType
-								   var vec = new RVector(buf, "Logical")
-								   variableMappings += (s -> vec)
+				case b: Boolean => {
+					buf += new Logical(b)
+					var vec = new RVector(buf, "Logical")
+					variableMappings += (s -> vec)
+				}
+				case i: Int => {
+					buf += new Numeric(i)
+					var vec = new RVector(buf, "Numeric")
+					variableMappings += (s -> vec)
+				}
+				case d: Double => {
+					buf += new Numeric(d)
+					var vec = new RVector(buf, "Numeric")
+					variableMappings += (s -> vec)
+				}
+				case str: String => {
+					buf += new Character(str)
+					var vec = new RVector(buf, "Character")
+					variableMappings += (s -> vec)
+				}
+				case na: NAType => {
+					buf += new NAType
+					var vec = new RVector(buf, "Logical")
+					variableMappings += (s -> vec)
+				}
 				case v: RVector  => variableMappings += (s -> v)	
 				case df: DataFrame => dfMappings += (s -> df)
-			}
-		}
-
-		def <--(variable: Symbol) = {
-			if (variableMappings.contains(variable)) {
-				variableMappings += (s -> variableMappings(variable))
-			} else {
-				val name = variable.name
-				throw new RuntimeException(s"Error: object '$name' not found")
+				case variable: Symbol => {
+					if (variableMappings.contains(variable)) {
+						variableMappings += (s -> variableMappings(variable))
+					} else {
+						val name = variable.name
+						throw new RuntimeException(s"Error: object '$name' not found")
+					}
+				}
 			}
 		}
 
