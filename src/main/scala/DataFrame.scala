@@ -59,7 +59,7 @@ class DataFrame(var cols: ArrayBuffer[RVector], var schema: LinkedHashMap[String
 				rowVals += col(row).data(0)
 			}
 		} else {
-			throw new RuntimeException(s"Error: row index is out of bounds")
+			throw new RuntimeException("Error: row index is out of bounds")
 		}
 		rowVals
 	}

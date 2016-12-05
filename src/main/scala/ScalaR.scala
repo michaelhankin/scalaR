@@ -29,6 +29,10 @@ object ScalaR {
 
 		def apply(rowIdx: Int, colIdx: Int): RVector = {
 			val df = dfMappings(s)
+			if (colIdx == -1) {
+				val currRow = df.getRow(rowIdx)
+				new RVector(currRow, currRow(0).getType)
+			}
 			df(rowIdx, colIdx)
 		}	
 
@@ -128,7 +132,9 @@ object ScalaR {
 
 	def data_frame(cols: RVector*): DataFrame = {
 		val data = cols.to[ArrayBuffer]
-		var schema = Map[String, (Int, String)]()
+		if (!data.forall(col => col.length == data(0).length))
+			throw new RuntimeException("Error: all input vectors must have the same length")
+		var schema = LinkedHashMap[String, (Int, String)]()
 		for ((col, i) <- data.zipWithIndex) {
 			schema += (s"v${i + 1}" -> (i + 1, col.getType))
 		}
